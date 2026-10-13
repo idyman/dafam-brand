@@ -13,6 +13,7 @@
 <link rel="icon" href="assets/logo/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="assets/logo/apple-touch-icon-180.png">
 
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400..900&display=swap">
@@ -224,14 +225,14 @@ svg.ic{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke
 .ios{position:relative;width:402px;height:874px;border-radius:55px;overflow:hidden;background:var(--surface);
   font-family:var(--font-sans);direction:inherit}
 /* status bar: 54pt; iOS mirrors it in RTL (time on the right in Hebrew) */
-.ios-status{position:absolute;inset-inline:0;top:0;height:54px;z-index:4;display:flex;align-items:center;justify-content:space-between;padding-inline:34px 30px;padding-top:6px;color:#000}
+.ios-status{position:absolute;inset-inline:0;top:0;height:54px;z-index:9;display:flex;align-items:center;justify-content:space-between;padding-inline:34px 30px;padding-top:6px;color:#000}
 [dir="rtl"] .ios-status{padding-inline:30px 34px}
 .ios-time{font:600 17px/1 -apple-system,"SF Pro Text","Heebo",sans-serif;letter-spacing:-.2px;direction:ltr;width:54px;text-align:center}
 .ios-ind{display:flex;align-items:center;gap:6px;direction:ltr}
 .ios-ind svg{display:block}
-.island{position:absolute;top:11px;left:50%;width:126px;height:37px;margin-left:-63px;border-radius:20px;background:#000;z-index:5}
+.island{position:absolute;top:11px;left:50%;width:126px;height:37px;margin-left:-63px;border-radius:20px;background:#000;z-index:10}
 .island::after{content:"";position:absolute;top:12px;right:22px;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#2b3550 0,#0e1222 55%,#000 70%)}
-.home-ind{position:absolute;bottom:8px;left:50%;width:139px;height:5px;margin-left:-69.5px;border-radius:3px;background:#000;z-index:6}
+.home-ind{position:absolute;bottom:8px;left:50%;width:139px;height:5px;margin-left:-69.5px;border-radius:3px;background:#000;z-index:10}
 /* app */
 .app{position:absolute;inset:0;padding:62px 16px 0;overflow:hidden;display:grid;align-content:start;gap:12px}
 .app-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px}
@@ -250,6 +251,33 @@ svg.ic{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke
 .app .fab{position:absolute;inset-inline-start:16px;bottom:126px;width:60px;height:60px;z-index:3}
 .app .dock{position:absolute;inset-inline:12px;bottom:34px;z-index:3}
 .app::after{content:"";position:absolute;inset-inline:0;bottom:0;height:150px;background:linear-gradient(to top,var(--surface) 55%,rgba(255,255,255,0));z-index:2;pointer-events:none}
+
+.app-head{display:grid !important;grid-template-columns:44px 1fr 44px;align-items:center}
+.app-head .logo{justify-self:center}
+.app-head .lang{justify-self:end;min-height:36px;padding:0 10px}
+.burger{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:14px;background:var(--soft-blue);color:var(--navy);cursor:pointer}
+.burger svg{width:22px;height:22px}
+.scrim{position:absolute;inset:0;z-index:7;background:rgba(0,24,70,.38)}
+.drawer{position:absolute;top:0;bottom:0;inset-inline-start:0;z-index:8;width:318px;display:flex;flex-direction:column;gap:14px;padding:62px 14px 34px;
+  background:var(--surface);border-start-end-radius:30px;border-end-end-radius:30px;box-shadow:var(--shadow-sheet);transform:translateX(105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);visibility:hidden}
+[dir="ltr"] .drawer{transform:translateX(-105%)}
+.drawer.open{transform:none;visibility:visible}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px}
+.drawer-head .logo{width:110px;margin:0}
+.drawer-fam{display:flex;align-items:center;gap:10px;padding:12px;border-radius:18px;background:var(--panel)}
+.drawer-fam .avatar{width:40px;height:40px;background:var(--navy);color:var(--surface);font-size:1rem}
+.drawer-fam strong{display:block;font-weight:850}
+.drawer-fam small{color:var(--muted);font-weight:720;font-size:.78rem}
+.drawer-nav{display:grid;gap:4px}
+.drawer-nav a,.drawer-foot a{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 14px;border-radius:14px;color:var(--ink);font-weight:850;text-decoration:none}
+.drawer-nav a svg,.drawer-foot a svg{color:var(--navy)}
+.drawer-nav a .pill{margin-inline-start:auto;min-height:26px;padding:2px 10px}
+.drawer-nav a.active{background:var(--navy);color:var(--surface)}
+.drawer-nav a.active svg{color:var(--surface)}
+.drawer-nav a.voice svg{background:var(--yellow);border-radius:8px;padding:2px;width:26px;height:26px}
+.drawer-foot{margin-top:auto;display:grid;gap:2px;padding-top:10px;border-top:1px solid var(--line)}
+.drawer-foot a{min-height:46px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
 .device-cap{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:12px}
 .device-cap span{display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:999px;background:var(--panel);color:var(--muted);font-size:.74rem;font-weight:850}
 
@@ -603,6 +631,7 @@ footer{padding:8px 4px 0;color:var(--muted);font-size:.8rem;font-weight:700;text
               </div>
               <div class="app">
                 <div class="app-head">
+                  <button class="burger" type="button" aria-label="תפריט" aria-expanded="false" aria-controls="drawer"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
                   <svg class="logo" viewBox="0 0 2146 357" role="img" aria-label="Da Fam"><use href="#dafam"/></svg>
                   <span class="lang">EN</span>
                 </div>
@@ -632,11 +661,32 @@ footer{padding:8px 4px 0;color:var(--muted);font-size:.8rem;font-weight:700;text
                   <a href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 11 3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>מטלות</a>
                 </nav>
               </div>
+              <div class="scrim" hidden></div>
+              <aside class="drawer" id="drawer" aria-label="תפריט" aria-hidden="true">
+                <div class="drawer-head">
+                  <svg class="logo" viewBox="0 0 2146 357" role="img" aria-label="Da Fam"><use href="#dafam"/></svg>
+                  <button class="burger close" type="button" aria-label="סגור תפריט"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+                </div>
+                <div class="drawer-fam"><span class="avatar">ל</span><div><strong>משפחת לוי</strong><small><span class="num">4</span> בני משפחה · קוד <span class="num">LEVI-24</span></small></div></div>
+                <nav class="drawer-nav" aria-label="כל העמודים">
+                  <a class="active" href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7v9H3z"/></svg>היום</a>
+                  <a href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>יומן<small class="pill soft"><span class="num">3</span></small></a>
+                  <a href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 11 3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>מטלות</a>
+                  <a href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h15l-2 9H8L6 3H3"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>קניות<small class="pill soft"><span class="num">4</span></small></a>
+                  <a class="voice" href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>קול</a>
+                  <a href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14.2c2.4.2 4 1.9 4.5 4.8"/></svg>משפחה</a>
+                  <a href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>מטבח · מסך משפחתי</a>
+                </nav>
+                <div class="drawer-foot">
+                  <a href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>הגדרות</a>
+                  <a href="#navigation"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M12 4c2.5 2.2 3.8 4.9 3.8 8s-1.3 5.8-3.8 8c-2.5-2.2-3.8-4.9-3.8-8S9.5 6.2 12 4Z"/><circle cx="12" cy="12" r="8"/></svg>English</a>
+                </div>
+              </aside>
               <div class="home-ind"></div>
             </div>
           </div>
         </div></div>
-        <div class="device-cap" dir="ltr"><span>iPhone 18 Pro</span><span>402 × 874 pt</span><span>1206 × 2622 px @3x</span><span>Safe area 62 / 34</span></div>
+        <div class="device-cap" dir="ltr"><span>iPhone 18 Pro</span><span>402 × 874 pt</span><span>1206 × 2622 px @3x</span><span>Safe area 62 / 34</span><span>☰ לחצו לפתיחת התפריט</span></div>
       </div>
     </div>
   </section>
@@ -705,12 +755,22 @@ footer{padding:8px 4px 0;color:var(--muted);font-size:.8rem;font-weight:700;text
   function say(msg){toast.textContent=msg;toast.hidden=false;clearTimeout(t);t=setTimeout(function(){toast.hidden=true},1800);}
   document.addEventListener('click',function(e){
     var b=e.target.closest('button'); if(!b) return;
+    if(b.classList.contains('burger'))return;
     if(b.classList.contains('check')){var on=!b.classList.contains('done');b.classList.toggle('done',on);b.setAttribute('aria-pressed',on);var row=b.closest('.shop');if(row)row.classList.toggle('checked',on);if(on)say('הושלם');return;}
     if(b.classList.contains('fab')){var open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',open);return;}
     if(b.classList.contains('member')){b.parentNode.querySelectorAll('.member').forEach(function(m){m.setAttribute('aria-pressed',m===b)});return;}
     if(b.getAttribute('role')==='tab'){b.parentNode.querySelectorAll('[role=tab]').forEach(function(x){x.setAttribute('aria-selected',x===b)});return;}
     if(b.dataset.toast){say(b.dataset.toast);}
   });
+  var ios=document.querySelector('.ios');
+  if(ios){var dr=ios.querySelector('.drawer'),scrim=ios.querySelector('.scrim'),opener=ios.querySelector('.app-head .burger');
+    function setMenu(open){dr.classList.toggle('open',open);dr.setAttribute('aria-hidden',!open);scrim.hidden=!open;opener.setAttribute('aria-expanded',open);if(open){dr.querySelector('.close').focus();}else{opener.focus();}}
+    opener.addEventListener('click',function(e){e.stopPropagation();setMenu(true)});
+    dr.querySelector('.close').addEventListener('click',function(e){e.stopPropagation();setMenu(false)});
+    scrim.addEventListener('click',function(){setMenu(false)});
+    dr.querySelectorAll('.drawer-nav a').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();dr.querySelectorAll('.drawer-nav a').forEach(function(x){x.classList.toggle('active',x===a)});setMenu(false)})});
+    ios.addEventListener('keydown',function(e){if(e.key==='Escape'&&dr.classList.contains('open'))setMenu(false)});
+  }
   var wrap=document.querySelector('.device-wrap'),sc=document.querySelector('.device-scale'),st=document.querySelector('.device-stage');
   function fit(){if(!wrap||!sc)return;var k=Math.min(1,wrap.clientWidth/430);sc.style.transform='scale('+k+')';st.style.height=(902*k)+'px';sc.style.right=((wrap.clientWidth-430*k)/2)+'px';}
   fit(); if(window.ResizeObserver){new ResizeObserver(fit).observe(wrap);} else {window.addEventListener('resize',fit);}

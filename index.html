@@ -334,6 +334,49 @@ footer{padding:8px 4px 0;color:var(--muted);font-size:.8rem;font-weight:700;text
   .ctrl-row .btn:not(.sm):not(.md){flex:1 1 100%}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+
+/* ---- mobile polish ---- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.specimen > *,.hero > *,.grid > *,.meaning > *,.nav-layout > *{min-width:0}
+.specimen .big .glyphs{overflow-wrap:anywhere}
+@media (max-width:640px){
+  .shell{gap:12px}
+  .hero-copy h1{font-size:2.1rem}
+  .hero-brand{min-height:0;padding:22px !important}
+  .hero-brand .logo{width:min(180px,80%)}
+  .s-head{gap:10px}
+  .s-head .n{width:36px;height:36px;font-size:.74rem}
+  .section{gap:12px}
+  .tile{padding:14px}
+  .principle p{font-size:.86rem}
+  .grid.g4:not(.rules){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .swatch .chip{height:52px}
+  .swatch.big .chip{height:72px}
+  .swatch p{font-size:.74rem}
+  .swatch .hex{font-size:.68rem}
+  .meaning{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .meaning .tile:last-child{grid-column:1/-1}
+  .accents div{min-height:84px;padding:8px}
+  .specimen .big{min-height:0;padding:18px}
+  .specimen .big .glyphs{font-size:1.95rem}
+  .specimen .big .latin{font-size:1.1rem}
+  .weights .w{padding:8px 12px}
+  .weights .w span:first-child{font-size:1.1rem}
+  .scale .row{padding:12px 14px;gap:6px}
+  .scale .row > span:first-child{font-size:min(1em,100%)}
+  .radii .r div{width:52px;height:52px}
+  .radii .r div[style*="width:96px"]{width:76px !important}
+  .ctrl-row{gap:10px}
+  .size-strip span{min-height:38px;padding:0 12px;font-size:.84rem}
+  .grid.g4 .card{padding:16px}
+  .mixed .row{font-size:.88rem}
+  .logo-sizes{gap:18px;padding:14px}
+  .logo-usage .tile{padding:20px 14px}
+  .mirror .rowx{padding:8px 10px}
+  .checklist label{min-height:52px;padding:10px 14px}
+  .toc a{min-height:36px;padding:0 10px}
+  footer{font-size:.74rem}
+}
 </style>
 </head>
 <body>

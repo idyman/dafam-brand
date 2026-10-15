@@ -26,6 +26,13 @@
   --soft-blue:#eef2ff; --ink:#071943; --muted:#6b7085; --line:#e8edf6;
   --yellow:#deff00; --green:#03ff00; --green-soft:#eaffe8; --green-text:#0b7a12;
   --pink:#ff00bc; --pink-soft:#ffe8f7; --pink-text:#b0007f; --cyan:#00cdff; --purple:#8500ff; --purple-soft:#f2e8ff;
+
+  /* Extended optional neon accents */
+  --neon-orange:#FF8A00;
+  --neon-violet:#B36BFF;
+  --neon-magenta:#FF38E8;
+  --neon-mint:#00F5B5;
+  --neon-lime:#C6FF00;
   --font-sans:"Heebo",-apple-system,BlinkMacSystemFont,"Segoe UI","Arial Hebrew","Noto Sans Hebrew",Arial,sans-serif;
   --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --shadow-shell:0 28px 70px rgba(0,31,91,.16); --shadow-card:0 16px 40px rgba(0,31,91,.08); --shadow-sheet:0 24px 62px rgba(0,31,91,.20);
@@ -377,6 +384,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .toc a{min-height:36px;padding:0 10px}
   footer{font-size:.74rem}
 }
+
+.extended-neon{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;direction:ltr}
+.extended-neon .chip{display:flex;align-items:flex-end;padding:14px;color:var(--navy);font-weight:850;height:100px}
+.extended-neon .hex{overflow-wrap:anywhere}
+@media(max-width:640px){.extended-neon{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -465,6 +477,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <div class="swatch"><div class="chip" style="background:#74798e"></div><strong>Muted</strong><span class="hex">#74798E</span><p><span class="num">4.31:1</span> על לבן. בטקסט ארוך: #6B7085.</p></div>
       <div class="swatch"><div class="chip" style="background:var(--line)"></div><strong>Line</strong><span class="hex">#E8EDF6</span><p>קווי הפרדה.</p></div>
       <div class="swatch"><div class="chip" style="background:var(--green-soft)"></div><strong>Green soft</strong><span class="hex">#EAFFE8 · #0B7A12</span><p>רקע וטקסט הצלחה.</p></div>
+    </div>
+    <h3 class="sub" id="extended-neon">חמישה צבעי ניאון נוספים</h3>
+    <p>צבעי הדגשה נוספים לזיהוי בני משפחה, קטגוריות ותגיות. משתמשים בטקסט כחול כהה על הצבע, לצד שם או אייקון. צבעי הקול, ההצלחה והדחיפות שומרים על המשמעות שלהם.</p>
+    <div class="extended-neon" aria-label="Extended neon accents">
+      <div class="swatch"><div class="chip" style="background:var(--neon-orange)">Neon Orange</div><span class="hex">#FF8A00</span><span class="hex">--neon-orange</span></div>
+      <div class="swatch"><div class="chip" style="background:var(--neon-violet)">Neon Violet</div><span class="hex">#B36BFF</span><span class="hex">--neon-violet</span></div>
+      <div class="swatch"><div class="chip" style="background:var(--neon-magenta)">Neon Magenta</div><span class="hex">#FF38E8</span><span class="hex">--neon-magenta</span></div>
+      <div class="swatch"><div class="chip" style="background:var(--neon-mint)">Neon Mint</div><span class="hex">#00F5B5</span><span class="hex">--neon-mint</span></div>
+      <div class="swatch"><div class="chip" style="background:var(--neon-lime)">Neon Lime</div><span class="hex">#C6FF00</span><span class="hex">--neon-lime</span></div>
     </div>
     <h3 class="sub">צבע אחד, משמעות אחת</h3>
     <div class="meaning">

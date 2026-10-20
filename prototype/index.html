@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ffffff">
+<title>Da Fam · Prototype</title>
+<link rel="icon" href="assets/symbol-navy.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#001f5b;--ink:#071943;--muted:#6b7085;--panel:#f5f7fc;--panel2:#edf1fa;--soft:#eef2ff;--line:#e8edf6;--canvas:#c7d1ff;--yellow:#deff00;--gsoft:#eaffe8;--gtext:#0b7a12;--psoft:#ffe8f7;--ptext:#b0007f;--cyan:#00cdff;--purple:#8500ff;--box:#7d86a0}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--canvas);font-family:Heebo,-apple-system,'Arial Hebrew','Noto Sans Hebrew',sans-serif;color:var(--ink);display:flex;align-items:center;justify-content:center;overflow:hidden}
+a{color:inherit}
+button,input{font-family:inherit;color:inherit}
+.stage{width:402px;height:874px;flex-shrink:0;transform-origin:center center}
+.phone{width:402px;height:874px;border-radius:46px;overflow:hidden;background:#fff;box-shadow:0 0 0 10px #0b0f1c,0 40px 90px rgba(0,31,91,.35);position:relative}
+.screen{position:relative;width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;background:#fff}
+.restart{position:fixed;top:16px;left:16px;font-size:13px;font-weight:800;color:var(--navy);text-decoration:none;background:#fff;border-radius:999px;padding:12px 16px;box-shadow:0 6px 16px rgba(0,31,91,.12)}
+@media (max-width:500px){
+  body{background:#fff}
+  .stage{width:100vw;height:100dvh;transform:none!important}
+  .phone{width:100%;height:100%;border-radius:0;box-shadow:none}
+  .fake,.restart{display:none!important}
+  .screen{padding-top:env(safe-area-inset-top)}
+  .nav{margin-bottom:max(12px,env(safe-area-inset-bottom))!important}
+}
+@media (max-height:760px){.cover{height:112px!important}}
+.sb{flex-shrink:0;height:50px;padding:15px 30px 0;display:flex;align-items:flex-start;justify-content:space-between;position:relative;color:#000}
+.sb.light{color:#fff}
+.sb .time{width:60px;text-align:center;direction:ltr;font-family:-apple-system,'SF Pro Text',Heebo,sans-serif;font-size:17px;font-weight:650;line-height:20px}
+.sb .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:124px;height:36px;border-radius:999px;background:#000}
+.sb .icons{display:flex;align-items:center;gap:6px;direction:ltr;height:20px}
+.homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:999px;background:#000}
+.homebar.light{background:#fff}
+.content{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;padding:4px 16px 24px;display:flex;flex-direction:column;gap:12px}
+.content::-webkit-scrollbar,.ob::-webkit-scrollbar,.sheet::-webkit-scrollbar{display:none}
+.content>*,.ob>*,.sheet>*{flex-shrink:0}
+.ob{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;padding:6px 20px 32px;display:flex;flex-direction:column;gap:20px}
+.spacer{flex:1 1 auto!important}
+.col{display:flex;flex-direction:column}
+.between{display:flex;align-items:center;justify-content:space-between}
+.grow{flex:1 1 auto;display:flex;flex-direction:column;min-width:0}
+h1{margin:0;font-size:20px;line-height:1.18;font-weight:850}
+h1.big{font-size:24px;line-height:1.2}
+h2{margin:0;font-size:16px;font-weight:850}
+.h3{margin:0;font-size:13px;font-weight:850;color:var(--muted)}
+.eyebrow{font-size:12px;font-weight:800;color:var(--muted)}
+.lead{margin:0;font-size:15px;font-weight:500;line-height:1.5;color:#4b5068}
+.meta{font-size:12px;font-weight:750;color:var(--muted)}
+.link{min-height:44px;display:inline-flex;align-items:center;padding:0 4px;font-size:13px;font-weight:800;color:var(--muted);text-decoration:none;background:none;border:0;cursor:pointer}
+.nav{flex-shrink:0;margin:0 12px 22px;height:70px;background:var(--panel);border-radius:22px;box-shadow:0 24px 62px rgba(0,31,91,.12);display:flex;align-items:center;padding:0 6px;gap:2px}
+.nav .grp{flex:1 1 0;display:flex;gap:2px}
+.tab{flex:1 1 0;height:56px;border-radius:16px;text-decoration:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;font-weight:800}
+.tab.on{background:#fff;color:var(--navy);font-weight:850}
+.mic{flex:0 0 auto;width:72px;height:78px;align-self:flex-end;margin-bottom:7px;text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;color:var(--navy);font-size:12px;font-weight:850}
+.mic span{width:58px;height:58px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 5px #fff,0 12px 28px rgba(0,31,91,.18);display:flex;align-items:center;justify-content:center;position:relative}
+.mic span i{position:absolute;bottom:-2px;left:-2px;width:22px;height:22px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #fff}
+.av{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:850;flex-shrink:0;letter-spacing:-.5px}
+.row{display:flex;align-items:center;gap:10px;background:var(--panel);border-radius:18px;padding:6px 10px;min-height:56px}
+.chk{width:44px;height:44px;margin:-6px;padding:0;border:0;background:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.chk .box{width:32px;height:32px;border-radius:12px;background:#fff;border:2px solid var(--box);display:flex;align-items:center;justify-content:center}
+.chk.on .box{background:var(--yellow);border-color:var(--yellow)}
+.dash{width:32px;height:32px;flex-shrink:0;border-radius:12px;border:2px dashed var(--ptext)}
+.t{flex:1 1 auto;font-size:14px;font-weight:700}
+.done{color:var(--muted)!important;text-decoration:line-through}
+.card{background:#fff;border:1px solid var(--line);border-radius:26px;box-shadow:0 16px 40px rgba(0,31,91,.08)}
+.pill{border-radius:999px;font-size:12px;font-weight:850;padding:5px 10px;white-space:nowrap}
+.pill.pink{background:var(--psoft);color:var(--ptext)}
+.pill.green{background:var(--gsoft);color:var(--gtext)}
+.pill.soft{background:var(--soft);color:var(--navy)}
+.btn{height:52px;border:0;border-radius:999px;background:var(--navy);color:#fff;font-size:16px;font-weight:850;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;width:100%}
+.btn:disabled{background:#c9d2ea;color:#4b5068;cursor:not-allowed}
+.btn2{height:48px;border:0;border-radius:999px;background:var(--panel2);color:var(--navy);font-size:15px;font-weight:850;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;width:100%}
+.btn.danger{background:var(--ptext)}
+.sm{height:44px;border:0;border-radius:999px;font-size:13px;font-weight:850;padding:0 14px;background:var(--navy);color:#fff;cursor:pointer;flex-shrink:0;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.sm.light{background:#fff;color:var(--navy)}
+.seg{height:52px;background:var(--panel);border-radius:999px;padding:4px;display:flex;gap:4px}
+.seg button{flex:1 1 0;border:0;border-radius:999px;background:transparent;color:var(--muted);font-size:14px;font-weight:800;cursor:pointer}
+.seg button.on{background:#fff;color:var(--navy);font-weight:850;box-shadow:0 4px 12px rgba(0,31,91,.08)}
+.iconbtn{width:44px;height:44px;flex-shrink:0;border-radius:14px;background:var(--soft);display:flex;align-items:center;justify-content:center;border:0;cursor:pointer;text-decoration:none}
+.sheet{background:#fff;border-radius:34px 34px 0 0;box-shadow:0 24px 62px rgba(0,31,91,.2);padding:10px 16px 28px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;scrollbar-width:none;flex:1 1 auto;margin-top:12px;min-height:0}
+.grabber{display:flex;justify-content:center}.grabber span{width:40px;height:5px;border-radius:999px;background:var(--line)}
+.label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:850;color:var(--muted)}
+.input{height:52px;border:1.5px solid var(--navy);border-radius:18px;padding:0 14px;font:inherit;font-size:16px;font-weight:600;color:var(--ink);background:#fff;unicode-bidi:plaintext;width:100%}
+.input.small{height:44px;font-size:15px;width:auto}
+.progress{flex:1 1 auto;display:flex;gap:6px}.progress span{flex:1 1 0;height:6px;border-radius:999px;background:var(--line)}.progress span.on{background:var(--navy)}
+.switch{width:50px;height:30px;flex-shrink:0;border-radius:999px;padding:3px;display:flex;background:#7d86a0;justify-content:flex-start}
+.switch.on{background:var(--navy);justify-content:flex-end}
+.switch i{width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,31,91,.2)}
+.listbtn{min-height:52px;border:0;background:none;padding:4px 0;display:flex;align-items:center;gap:10px;text-align:start;cursor:pointer;width:100%;text-decoration:none}
+.chip{min-height:44px;border-radius:999px;padding:0 16px;font-size:14px;font-weight:850;background:#fff;color:var(--navy);border:1.5px solid var(--line);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.cover{position:relative;height:150px;border-radius:26px;overflow:hidden;background-color:var(--soft);background-size:cover;background-position:center}
+.hidden-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.status{border-radius:18px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.toast{position:absolute;left:16px;right:16px;bottom:112px;background:var(--navy);color:#fff;border-radius:18px;padding:14px 16px;font-size:14px;font-weight:800;box-shadow:0 16px 40px rgba(0,31,91,.3);z-index:5;animation:rise .25s ease-out}
+@keyframes rise{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.flash{animation:flash 2.2s ease-out}
+@keyframes flash{0%,35%{box-shadow:0 0 0 3px var(--yellow),0 0 0 7px rgba(222,255,0,.35)}100%{box-shadow:0 0 0 0 transparent}}
+.pulse{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@media (prefers-reduced-motion:reduce){.pulse,.flash,.toast{animation:none}}
+.edit{background:var(--panel);border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 8px}
+.field{min-height:52px;border:0;border-bottom:1px solid var(--line);background:none;padding:0;display:flex;align-items:center;gap:10px;text-align:start;cursor:pointer;width:100%}
+.field.warn{background:var(--psoft);border-radius:14px;border-bottom:0;padding:0 10px;margin:2px 0}
+</style>
+</head>
+<body>
+<a class="restart" href="#splash" id="restart">מההתחלה ↺</a>
+<div class="stage" id="stage"><div class="phone" id="app"></div></div>
+<script>
+(function () {
+  'use strict';
+  var NOW_DAY = 2, NOW_MIN = 15 * 60 + 25;   // demo clock: Tue 20.10, 15:25
+  var DAYS = [['א׳', 18, 'ראשון'], ['ב׳', 19, 'שני'], ['ג׳', 20, 'שלישי'], ['ד׳', 21, 'רביעי'], ['ה׳', 22, 'חמישי'], ['ו׳', 23, 'שישי'], ['ש׳', 24, 'שבת']];
+  var PALETTE = [['#001f5b', '#ffffff'], ['#b0007f', '#ffffff'], ['#0b7a12', '#ffffff']];
+
+  function fresh() {
+    return {
+      me: 'a', flow: 'create', hname: 'משפחת לוי',
+      members: [
+        { id: 'a', name: 'איתמר', short: 'אי', bg: '#00cdff', fg: '#001f5b', form: 'm', role: 'parent' },
+        { id: 'n', name: 'נדין', short: 'נד', bg: '#ff00bc', fg: '#001f5b', form: 'f', role: 'parent' },
+        { id: 'l', name: 'ליה', short: 'לי', bg: '#8500ff', fg: '#ffffff', form: 'f', role: 'child', age: 5 }
+      ],
+      events: [
+        { id: 'gan', day: 2, t: 480, end: 840, title: 'גן', kid: 'l', who: ['l', 'n'], place: 'גן רימון' },
+        { id: 'kt', day: 2, t: 960, end: 1020, title: 'קינדרטורנן', kid: 'l', who: ['l'], place: 'אולם הספורט', fromCal: true },
+        { id: 'dinner', day: 2, t: 1110, end: 1170, title: 'ארוחה משפחתית', who: ['a', 'n', 'l'] },
+        { id: 'art', day: 1, t: 990, end: 1050, title: 'חוג ציור', kid: 'l', who: ['l', 'n'] },
+        { id: 'dentist', day: 3, t: 450, end: 510, title: 'רופא שיניים', kid: 'l', who: ['l', 'a'] },
+        { id: 'meeting', day: 4, t: 1140, end: 1230, title: 'אסיפת הורים בגן', who: ['a', 'n'] },
+        { id: 'grandma', day: 5, t: 780, end: 960, title: 'ארוחת שישי אצל סבתא', who: ['a', 'n', 'l'] }
+      ],
+      items: [
+        { id: 'gan_drop', ev: 'gan', kind: 'ride', title: 'הסעה לגן', t: 465, owner: 'n', done: true },
+        { id: 'art_ride', ev: 'art', kind: 'ride', title: 'הסעה לחוג', t: 975, owner: 'n', done: true },
+        { id: 'kt_to', ev: 'kt', kind: 'ride', title: 'הסעה הלוך', t: 940, owner: 'n', confirmed: true, seenAt: '14:02' },
+        { id: 'kt_back', ev: 'kt', kind: 'ride', title: 'איסוף', t: 1020, owner: null, critical: true },
+        { id: 'kt_bag', ev: 'kt', kind: 'prep', title: 'תיק התעמלות', owner: 'a' },
+        { id: 'kt_water', ev: 'kt', kind: 'prep', title: 'בקבוק מים', owner: 'a', done: true },
+        { id: 'bread', ev: 'dinner', kind: 'prep', title: 'לקנות לחם בדרך', owner: null },
+        { id: 'table', ev: 'dinner', kind: 'prep', title: 'לערוך שולחן', owner: 'l' },
+        { id: 'dent_ride', ev: 'dentist', kind: 'ride', title: 'הסעה', t: 430, owner: 'a', confirmed: true },
+        { id: 'dent_card', ev: 'dentist', kind: 'prep', title: 'כרטיס קופה', owner: 'a' },
+        { id: 'cake', ev: 'grandma', kind: 'prep', title: 'להביא עוגה', owner: 'n' },
+        { id: 'dog', kind: 'task', title: 'להאכיל את הכלב', owner: 'a', repeat: 'כל ערב', day: 2 },
+        { id: 'lawn', kind: 'task', title: 'לכסח את הדשא', owner: 'a', repeat: 'כל 3 ימים', day: 3 },
+        { id: 'wall', kind: 'task', title: 'לצבוע קיר', owner: 'a', day: 2, done: true, doneAt: '14:10' }
+      ],
+      shop: { owner: 'n', store: false, list: [{ id: 's1', label: 'חלב 3%' }, { id: 's2', label: 'עגבניות' }, { id: 's3', label: 'ביצים' }, { id: 's4', label: 'חיתולים' }] },
+      photo: null, toast: null, flash: null, request: null,
+      tasksTab: 'all', cal: { view: 'day', day: 2, who: 'all' }, eventId: 'kt',
+      add: { mode: 'voice', v: 'listening', edit: null, timeOk: false, prep: false, f: { title: 'חוג שחייה', kid: 'l', day: 4, time: '17:00', ride: 'n', lead: 30 },
+             type: 'task', text: '', when: 'today', date: '', time: '16:00', owner: 'me', saved: null, link: null },
+      notif: { leave: true, claimed: true, morning: false, quiet: true, lead: 20 },
+      privacy: { open: false, seen: false },
+      lang: 'he', langOpen: false,
+      cals: { connected: true, family: true, work: false, holidays: true },
+      fam: { invited: false, danger: null, confirm: '' },
+      ob: { addKid: false, kidName: '', kidAge: '', kidSex: 'f', kidPhone: false, twoHomes: null, sent: false, copied: false, connected: false }
+    };
+  }
+  var S = fresh();
+
+  /* ---------- helpers ---------- */
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function M(id) { for (var i = 0; i < S.members.length; i++) if (S.members[i].id === id) return S.members[i]; return null; }
+  function me() { return M(S.me); }
+  function G(form, m, f, x) { return form === 'f' ? f : (form === 'x' ? x : m); }
+  function took(id) { var m = M(id); return m ? m.name + ' ' + G(m.form, 'לקח', 'לקחה', 'לקח') : ''; }
+  function hhmm(min) { var h = Math.floor(min / 60), m = min % 60; return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m; }
+  function toMin(s) { var p = String(s || '0:0').split(':'); return (+p[0]) * 60 + (+p[1] || 0); }
+  function E(id) { for (var i = 0; i < S.events.length; i++) if (S.events[i].id === id) return S.events[i]; return null; }
+  function I(id) { for (var i = 0; i < S.items.length; i++) if (S.items[i].id === id) return S.items[i]; return null; }
+  function itemsOf(ev, kind) { return S.items.filter(function (x) { return x.ev === ev && (!kind || x.kind === kind); }); }
+  function adults() { return S.members.filter(function (m) { return m.role === 'parent' || m.role === 'teen'; }); }
+  function greeting() { var h = Math.floor(NOW_MIN / 60); return h < 12 ? 'בוקר טוב' : (h < 17 ? 'צהריים טובים' : 'ערב טוב'); }
+  function uid() { return 'x' + Math.random().toString(36).slice(2, 8); }
+  function setToast(text) { S.toast = text; clearTimeout(setToast.t); setToast.t = setTimeout(function () { S.toast = null; render(true); }, 2800); }
+  function flash(id) { S.flash = id; setTimeout(function () { S.flash = null; }, 2300); }
+  function fl(id) { return S.flash === id ? ' flash' : ''; }
+  function kidName(ev) { var e = E(ev); return e && e.kid && M(e.kid) ? M(e.kid).name : ''; }
+
+  var P = {
+    home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>',
+    cal: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    tasks: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+    car: '<path d="M5 17h14v-5l-2-5H7l-2 5z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/>',
+    repeat: '<path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/>',
+    tick: '<path d="m6 12 4 4 8-9"/>', plus: '<path d="M12 5v14M5 12h14"/>',
+    cart: '<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.5 12h12l2-8H6"/>',
+    keyboard: '<rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
+    bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+    pencil: '<path d="M4 20h4L19 9l-4-4L4 16z"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>',
+    camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+    fwd: '<path d="M15 6l-6 6 6 6"/>', back: '<path d="M9 6l6 6-6 6"/>',
+    stop: '<rect x="7" y="7" width="10" height="10" rx="2"/>', shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+    door: '<path d="M14 3H6v18h8M10 12h11M18 9l3 3-3 3"/>', trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+    download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>'
+  };
+  function ic(n, size, color, sw) {
+    return '<svg width="' + (size || 20) + '" height="' + (size || 20) + '" viewBox="0 0 24 24" fill="none" stroke="' + (color || '#001f5b') + '" stroke-width="' + (sw || 1.9) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + P[n] + '</svg>';
+  }
+  function av(id, size, extra) {
+    var m = M(id), s = size || 28;
+    if (!m) return '<span class="av" style="width:' + s + 'px;height:' + s + 'px;font-size:' + Math.round(s * .4) + 'px;border:1.5px dashed #6b7085;color:#6b7085">?</span>';
+    return '<span class="av" role="img" aria-label="' + esc(m.name) + '" style="width:' + s + 'px;height:' + s + 'px;font-size:' + Math.round(s * .38) + 'px;background:' + m.bg + ';color:' + m.fg + ';' + (extra || '') + '">' + esc(m.short) + '</span>';
+  }
+  function chk(on, act, arg, label) {
+    return '<button class="chk' + (on ? ' on' : '') + '" aria-label="' + (label || 'סמן כבוצע') + '" aria-pressed="' + !!on + '" data-act="' + act + '" data-arg="' + arg + '"><span class="box">' + (on ? ic('tick', 18, '#001f5b', 2.5) : '') + '</span></button>';
+  }
+  function sb(light) {
+    var c = light ? '#ffffff' : '#000000';
+    return '<div class="sb fake' + (light ? ' light' : '') + '" aria-hidden="true"><span class="time">' + hhmm(NOW_MIN) + '</span><span class="island"></span><span class="icons">' +
+      '<svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="' + c + '"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="' + c + '"/><rect x="10" y="3" width="3" height="9" rx="1" fill="' + c + '"/><rect x="15" y="0" width="3" height="12" rx="1" fill="' + c + '"/></svg>' +
+      '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.6 10.3 9.1a3.3 3.3 0 0 0-4.6 0z" fill="' + c + '"/><path d="M3.5 6.9a6.4 6.4 0 0 1 9 0l-1.4 1.4a4.4 4.4 0 0 0-6.2 0z" fill="' + c + '"/><path d="M1 4.4a9.9 9.9 0 0 1 14 0l-1.4 1.4a7.9 7.9 0 0 0-11.2 0z" fill="' + c + '"/></svg>' +
+      '<svg width="27" height="13" viewBox="0 0 27 13"><rect x="0.5" y="0.5" width="22" height="12" rx="3.8" fill="none" stroke="' + c + '" stroke-opacity="0.4"/><rect x="2" y="2" width="16" height="9" rx="2.2" fill="' + c + '"/><path d="M24 4.5v4a2 2 0 0 0 0-4z" fill="' + c + '" fill-opacity="0.45"/></svg></span></div>';
+  }
+  function homebar(light) { return '<span class="homebar fake' + (light ? ' light' : '') + '" aria-hidden="true"></span>'; }
+  function toast() { return S.toast ? '<div class="toast" role="status" aria-live="polite">' + esc(S.toast) + '</div>' : ''; }
+  function nav(active) {
+    function tab(id, icon, label) {
+      var on = active === id;
+      return '<a class="tab' + (on ? ' on' : '') + '" href="#' + id + '"' + (on ? ' aria-current="page"' : '') + '>' + ic(icon, 20, on ? '#001f5b' : '#6b7085') + label + '</a>';
+    }
+    return '<nav class="nav" aria-label="ניווט ראשי"><div class="grp">' + tab('main', 'home', 'היום') + tab('calendar', 'cal', 'לוח שנה') + '</div>' +
+      '<a class="mic" href="#add" aria-label="הוספה: לדבר או להקליד"><span>' + ic('mic', 26, '#001f5b', 2) + '<i>' + ic('plus', 13, '#ffffff', 3) + '</i></span>הוספה</a>' +
+      '<div class="grp">' + tab('tasks', 'tasks', 'מטלות') + tab('family', 'users', 'משפחה') + '</div></nav>';
+  }
+  function seg(items, current, act) {
+    return '<div class="seg" role="tablist">' + items.map(function (i) {
+      var on = current === i[0];
+      return '<button role="tab" aria-selected="' + on + '" class="' + (on ? 'on' : '') + '" data-act="' + act + '" data-arg="' + i[0] + '">' + i[1] + '</button>';
+    }).join('') + '</div>';
+  }
+  function progress(step, total) {
+    var h = '<div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="' + total + '" aria-valuenow="' + step + '" aria-label="שלב ' + step + ' מתוך ' + total + '">';
+    for (var i = 1; i <= total; i++) h += '<span class="' + (i <= step ? 'on' : '') + '"></span>';
+    return h + '</div>';
+  }
+  function obHead(back, step, total, skip) {
+    return '<div style="display:flex;align-items:center;gap:12px"><a class="iconbtn" href="#' + back + '" aria-label="חזרה">' + ic('back') + '</a>' + progress(step, total) +
+      (skip ? '<a class="link" style="font-size:14px" href="#' + skip + '">אחר כך</a>' : '') + '</div>';
+  }
+  function stepHead(step, total, title, lead) {
+    return '<div class="col" style="gap:6px"><span class="h3">שלב ' + step + ' מתוך ' + total + '</span><h1 class="big">' + title + '</h1>' + (lead ? '<p class="lead">' + lead + '</p>' : '') + '</div>';
+  }
+  function subHead(back, title, eyebrow) {
+    return '<div style="display:flex;align-items:center;gap:12px"><a class="iconbtn" href="#' + back + '" aria-label="חזרה">' + ic('back') + '</a><div class="col" style="gap:2px">' + (eyebrow ? '<div class="eyebrow">' + eyebrow + '</div>' : '') + '<h1>' + title + '</h1></div></div>';
+  }
+  function dayLabel(d) { return (d === NOW_DAY ? 'היום · ' : '') + DAYS[d][2] + ' ' + DAYS[d][1] + '.10'; }
+
+  /* ownership pieces, shared by Today, Event and Chores */
+  function claimLabel() { return G(me().form, 'אני לוקח', 'אני לוקחת', 'אני על זה'); }
+  function escalation(it) {
+    var at = (it.t || 0) - 60;
+    if (at <= NOW_MIN) return 'כל המבוגרים קיבלו תזכורת · נזכיר שוב ב-' + hhmm(Math.max(NOW_MIN + 5, (it.t || 0) - 30));
+    return 'אם אף אחד לא לוקח, נזכיר לכל המבוגרים ב-' + hhmm(at);
+  }
+  function rideWhat(it) { var k = kidName(it.ev); return it.title + (k ? ' של ' + k : '') + ' · ' + hhmm(it.t); }
+  function rideBlock(it) {
+    var what = rideWhat(it), k = kidName(it.ev);
+    if (it.owner === S.me) {
+      return '<div class="status' + fl(it.id) + '" style="background:#eaffe8;padding:10px 12px">' + ic('car', 20, '#0b7a12') + '<div class="grow"><span style="font-size:15px;font-weight:850;color:#0b7a12">' + G(me().form, 'אתה לוקח', 'את לוקחת', 'עליך') + ': ' + what + '</span><span style="font-size:12px;font-weight:700;color:#0b7a12">כל הבית קיבל עדכון · תזכורת ב-' + hhmm(it.t - S.notif.lead) + '</span></div>' + (it.done ? '' : '<button class="sm light" data-act="release" data-arg="' + it.id + '">לא מסתדר לי</button>') + '</div>';
+    }
+    if (it.owner) {
+      var o = M(it.owner);
+      return '<div class="row' + fl(it.id) + '"><span style="width:32px;display:flex;justify-content:center">' + ic('car', 20, '#001f5b', 1.8) + '</span><div class="grow"><span style="font-size:15px;font-weight:800">' + what + '</span><span style="font-size:12px;font-weight:750;color:#0b7a12">' + (o ? o.name + ' ' + (it.confirmed ? G(o.form, 'אישר', 'אישרה', 'אישר') : G(o.form, 'לקח', 'לקחה', 'לקח')) + (S.privacy.seen && it.seenAt ? ' · ' + G(o.form, 'ראה', 'ראתה', 'ראה') + ' ב-' + it.seenAt : '') : '') + '</span></div>' + av(it.owner, 30) + '</div>';
+    }
+    if (S.request === it.id) {
+      var list = adults().filter(function (m) { return m.id !== S.me; });
+      return '<div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px;border-color:#ff00bc"><div class="between"><span style="font-size:15px;font-weight:850">את מי לבקש?</span><button class="iconbtn" style="background:#fff" data-act="requestCancel" aria-label="סגירה">' + ic('x', 18) + '</button></div>' +
+        (list.length ? list.map(function (m) {
+          return '<button class="listbtn" data-act="requestSend" data-arg="' + m.id + '" style="background:#f5f7fc;border-radius:16px;padding:6px 10px">' + av(m.id, 36) + '<span class="grow"><span style="font-size:15px;font-weight:850">' + esc(m.name) + '</span><span class="meta">' + (m.id === 'n' ? 'פנויה אחרי 16:30 לפי היומן' : 'אין מידע ביומן') + '</span></span>' + ic('fwd', 18, '#6b7085', 2) + '</button>';
+        }).join('') : '<span class="meta">אין עוד מבוגרים בבית. אפשר להזמין במסך משפחה.</span>') + '</div>';
+    }
+    if (it.requested) {
+      return '<div class="status" style="background:#eef2ff;padding:10px 12px">' + ic('car', 20, '#001f5b') + '<div class="grow"><span style="font-size:15px;font-weight:850">' + what + '</span><span class="meta">ממתין לתשובה מ' + esc(M(it.requested).name) + '…</span></div>' + av(it.requested, 30, 'opacity:.6') + '</div>';
+    }
+    return '<div class="' + fl(it.id) + '" style="background:#ffe8f7;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;align-items:center;gap:8px">' + ic('car', 20, '#b0007f') + '<div class="col"><span style="font-size:15px;font-weight:850;color:#b0007f">מי ' + (it.title === 'איסוף' ? 'אוסף' : 'מסיע') + (k ? ' את ' + k : '') + ' ב-' + hhmm(it.t) + '?</span><span style="font-size:12px;font-weight:700;color:#b0007f">עוד אין אחראי</span></div></div>' +
+      '<div style="display:flex;gap:8px"><button class="btn" style="height:44px;font-size:15px" data-act="claim" data-arg="' + it.id + '">' + claimLabel() + '</button><button class="btn" style="height:44px;font-size:15px;background:#fff;color:#001f5b" data-act="requestOpen" data-arg="' + it.id + '">לבקש ממישהו</button></div>' +
+      '<div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:750;color:#b0007f">' + ic('bell', 14, '#b0007f') + escalation(it) + '</div></div>';
+  }
+  function prepRow(it, indent) {
+    var wrap = indent ? 'display:flex;align-items:center;gap:10px;min-height:48px;padding-inline-start:22px' : '';
+    var cls = indent ? '' : 'row';
+    if (!it.owner) {
+      return '<div class="' + cls + fl(it.id) + '" style="' + wrap + '"><span class="dash" aria-hidden="true"></span><span class="t">' + esc(it.title) + '</span><button class="sm" data-act="claim" data-arg="' + it.id + '">' + claimLabel() + '</button></div>';
+    }
+    var mine = it.owner === S.me;
+    return '<div class="' + cls + fl(it.id) + '" style="' + wrap + '">' + chk(it.done, 'toggle', it.id) + '<div class="grow"><span class="t' + (it.done ? ' done' : '') + '">' + esc(it.title) + '</span>' + (mine && !it.done && it.claimed ? '<button class="link" style="min-height:32px;padding:0;font-size:12px;align-self:flex-start" data-act="release" data-arg="' + it.id + '">לא מסתדר לי</button>' : '') + '</div>' + av(it.owner) + '</div>';
+  }
+
+  /* ---------- screens ---------- */
+  var screens = {};
+
+  screens.splash = function () {
+    return '<a class="screen" href="#ob1" aria-label="המשך" style="background:#001f5b;color:#fff;text-decoration:none">' + sb(true) +
+      '<div style="flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding-bottom:60px"><img src="assets/logo-white.svg" alt="Da Fam" style="width:220px;height:auto;display:block"><span style="font-size:17px;font-weight:700;opacity:.86">חיי משפחה, מסודרים. ביחד.</span></div>' +
+      '<div aria-hidden="true" style="display:flex;justify-content:center;gap:8px;padding-bottom:64px"><span style="width:8px;height:8px;border-radius:50%;background:#deff00"></span><span style="width:8px;height:8px;border-radius:50%;background:#00cdff"></span><span style="width:8px;height:8px;border-radius:50%;background:#ff00bc"></span></div>' + homebar(true) + '</a>';
+  };
+
+  screens.ob1 = function () {
+    var mini = 'background:#fff;border-radius:20px;box-shadow:0 16px 40px rgba(0,31,91,.10);padding:12px 14px;display:flex;align-items:center;gap:10px';
+    return '<div class="screen">' + sb() + '<div class="ob" style="padding-top:10px;gap:22px">' +
+      '<div style="display:flex;justify-content:center"><img src="assets/logo-navy.svg" alt="Da Fam" style="width:124px;height:auto;display:block"></div>' +
+      '<div aria-hidden="true" style="background:#eef2ff;border-radius:30px;padding:22px 18px;display:flex;flex-direction:column;gap:10px">' +
+        '<div style="' + mini + '"><span style="width:50px;height:44px;border-radius:12px;background:#eef2ff;color:#001f5b;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:850">16:00</span><div class="grow" style="gap:3px"><span style="font-size:15px;font-weight:850">קינדרטורנן</span><span class="pill pink" style="align-self:flex-start;font-size:11px;padding:3px 8px">מי אוסף את ליה?</span></div>' + av('l', 30) + '</div>' +
+        '<div style="' + mini + ';margin-inline-start:28px">' + av('a', 30) + '<span class="t" style="font-weight:800">״אני לוקח״</span><span class="pill green" style="font-size:11px;padding:3px 8px">נדין קיבלה עדכון</span></div>' +
+        '<div style="' + mini + ';margin-inline-start:56px;padding:10px 14px"><span style="width:28px;height:28px;border-radius:10px;background:#deff00;display:flex;align-items:center;justify-content:center">' + ic('tick', 16, '#001f5b', 2.6) + '</span><span class="t done">תיק התעמלות</span></div></div>' +
+      '<div class="col" style="gap:10px;text-align:center"><h1 class="big">כל הבית, באותו עמוד</h1><p class="lead">Da Fam מחברת את היומן, המטלות והאנשים בבית. <br>כל אחד יודע מה צריך לקרות, ומי לוקח את זה.</p></div>' +
+      '<div class="spacer"></div>' +
+      '<div class="col" style="gap:10px"><button class="btn" data-act="startCreate">בואו נתחיל</button><a class="btn2" href="#join">קיבלתי הזמנה לבית קיים</a></div>' +
+      '</div>' + homebar() + '</div>';
+  };
+
+  screens.join = function () {
+    var n = M('n') || { form: 'f' };
+    var m = S.members.filter(function (x) { return x.id !== 'n'; });
+    return '<div class="screen">' + sb() + '<div class="ob">' +
+      '<div style="display:flex;align-items:center;gap:12px"><a class="iconbtn" href="#ob1" aria-label="חזרה">' + ic('back') + '</a></div>' +
+      '<div class="col" style="gap:8px;align-items:center;text-align:center;padding-top:6px"><div style="display:flex">' + av('a', 56, 'border:3px solid #fff') + av('l', 56, 'border:3px solid #fff;margin-inline-start:-14px') + '</div>' +
+        '<h1 class="big">איתמר ' + G(n.form, 'הזמין אותך', 'הזמין אותך', 'הזמין אותך') + ' למשפחת לוי</h1><p class="lead">' + G(n.form, 'אתה מצטרף', 'את מצטרפת', 'ההצטרפות היא') + ' כהורה. תוכלו לראות ביחד מה צריך לקרות ומי לוקח את זה.</p></div>' +
+      '<div class="card" style="padding:8px 14px">' + m.map(function (x, i) {
+        return '<div style="display:flex;align-items:center;gap:12px;min-height:56px;' + (i < m.length - 1 ? 'border-bottom:1px solid #e8edf6' : '') + '">' + av(x.id, 36) + '<div class="grow"><span style="font-size:15px;font-weight:850">' + esc(x.name) + '</span><span class="meta">' + (x.role === 'parent' ? 'הורה' : (x.form === 'f' ? 'ילדה' : 'ילד') + ' · ' + x.age) + '</span></div></div>';
+      }).join('') + '</div>' +
+      '<div class="col" style="gap:8px"><span class="h3">מחכה כבר עכשיו</span><div class="row" style="background:#ffe8f7">' + ic('car', 20, '#b0007f') + '<div class="grow"><span style="font-size:14px;font-weight:850">איסוף ליה מקינדרטורנן · 17:00</span><span style="font-size:12px;font-weight:750;color:#b0007f">עוד אין אחראי</span></div></div></div>' +
+      '<div class="col" style="gap:8px"><span class="h3">איך לפנות אלייך?</span><div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        [['f', 'את'], ['m', 'אתה'], ['x', 'בלי מגדר']].map(function (o) { return '<button class="chip' + (n.form === o[0] ? ' on' : '') + '" data-act="joinForm" data-arg="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div></div>' +
+      '<div class="spacer"></div><button class="btn" data-act="joinGo">להצטרף כנדין</button>' +
+      '<span class="meta" style="text-align:center">הקישור תקף ל-7 ימים ומיועד רק לך.</span>' +
+      '</div>' + homebar() + '</div>';
+  };
+
+  screens.ob2 = function () {
+    var o = S.ob, mm = me();
+    var others = S.members.filter(function (x) { return x.id !== 'a'; });
+    var rows = others.map(function (x) {
+      var role = x.role === 'parent' ? 'הורה · ' + G(x.form, 'יקבל', 'תקבל', 'יקבל') + ' הזמנה בשלב הבא' : (x.role === 'teen' ? (x.form === 'f' ? 'נערה' : 'נער') + ' · ' + x.age + ' · עם טלפון, ' + G(x.form, 'רואה ולוקח', 'רואה ולוקחת', 'רואה ולוקח') + ' מטלות' : (x.form === 'f' ? 'ילדה' : 'ילד') + (x.age !== '' && x.age != null ? ' · ' + x.age : '') + ' · בלי חשבון');
+      return '<div class="row" style="gap:12px">' + av(x.id, 40) + '<div class="grow"><span style="font-size:15px;font-weight:850">' + esc(x.name) + '</span><span class="meta">' + role + '</span></div><button class="iconbtn" style="background:#fff" aria-label="להסיר את ' + esc(x.name) + '" data-act="obRemove" data-arg="' + x.id + '">' + ic('x', 16, '#6b7085', 2) + '</button></div>';
+    }).join('');
+    var hasParent = S.members.some(function (x) { return x.role === 'parent' && x.id !== 'a'; });
+    var hs = o.kidSex === 'f';
+    var kidForm = o.addKid ? '<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:10px">' +
+        '<label class="label">שם<input class="input" id="kidName" type="text" value="' + esc(o.kidName) + '" placeholder="למשל: נועם"></label>' +
+        '<div style="display:flex;gap:8px;align-items:flex-end"><label class="label" style="width:96px">גיל<input class="input" id="kidAge" type="number" min="0" max="18" inputmode="numeric" value="' + esc(o.kidAge) + '"></label>' +
+        '<div style="display:flex;gap:6px">' + [['f', 'בת'], ['m', 'בן']].map(function (s) { return '<button class="chip' + (o.kidSex === s[0] ? ' on' : '') + '" data-act="kidSex" data-arg="' + s[0] + '">' + s[1] + '</button>'; }).join('') + '</div></div>' +
+        '<button class="listbtn" role="switch" aria-checked="' + o.kidPhone + '" data-act="kidPhone"><span class="grow"><span style="font-size:15px;font-weight:800">יש ' + (hs ? 'לה' : 'לו') + ' טלפון</span><span class="meta">' + (hs ? 'תוכל לראות ולקחת מטלות משלה' : 'יוכל לראות ולקחת מטלות משלו') + '</span></span><span class="switch' + (o.kidPhone ? ' on' : '') + '"><i></i></span></button>' +
+        '<div style="display:flex;gap:8px"><button class="btn" style="height:48px;font-size:15px" data-act="kidSave">הוספה</button><button class="btn2" data-act="kidCancel">ביטול</button></div></div>' : '';
+    return '<div class="screen">' + sb() + '<div class="ob">' + obHead('ob1', 1, 4) + stepHead(1, 4, 'בונים את הבית', 'מי גר כאן? אפשר תמיד להוסיף ולשנות אחר כך.') +
+      '<label class="label">שם הבית<input class="input" id="hname" type="text" value="' + esc(S.hname) + '" style="font-weight:700"></label>' +
+      '<div class="col" style="gap:8px"><span class="h3">איך לפנות אליך?</span><div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        [['m', 'אתה'], ['f', 'את'], ['x', 'בלי מגדר']].map(function (f) { return '<button class="chip' + (mm.form === f[0] ? ' on' : '') + '" data-act="myForm" data-arg="' + f[0] + '">' + f[1] + '</button>'; }).join('') + '</div></div>' +
+      '<div class="col" style="gap:8px"><span class="h3">בני הבית</span>' +
+        '<div class="row" style="gap:12px">' + av('a', 40) + '<div class="grow"><span style="font-size:15px;font-weight:850">איתמר</span><span class="meta">הורה · ' + G(mm.form, 'זה אתה', 'זו את', 'החשבון שלך') + '</span></div></div>' + rows + kidForm +
+        (!o.addKid ? '<div style="display:flex;gap:8px">' + (!hasParent ? '<button class="chip" style="flex:1 1 0;justify-content:center;border-style:dashed;border-color:#7d86a0" data-act="obParent">+ הורה נוסף</button>' : '') + '<button class="chip" style="flex:1 1 0;justify-content:center;border-style:dashed;border-color:#7d86a0" data-act="kidOpen">+ ילד/ה</button></div>' : '') + '</div>' +
+      '<div class="col" style="gap:8px"><span class="h3">הילדים גרים גם בבית נוסף?</span><div style="display:flex;gap:8px">' + [['yes', 'כן'], ['no', 'לא']].map(function (c) { return '<button class="chip' + (o.twoHomes === c[0] ? ' on' : '') + '" data-act="twoHomes" data-arg="' + c[0] + '">' + c[1] + '</button>'; }).join('') + '</div>' +
+        (o.twoHomes === 'yes' ? '<div class="status" style="background:#f2e8ff;font-size:13px;font-weight:700;line-height:1.45">תודה. אנחנו בונים חיבור בין שני בתים, ונשמח לשמוע איך זה עובד אצלכם במהלך הבטא.</div>' : '') + '</div>' +
+      '<div class="spacer"></div><a class="btn" href="#ob3">המשך</a></div>' + homebar() + '</div>';
+  };
+
+  screens.ob3 = function () {
+    var o = S.ob, partner = S.members.filter(function (x) { return x.role === 'parent' && x.id !== 'a'; })[0];
+    var who = partner ? partner.name : 'מבוגר נוסף', pf = partner ? partner.form : 'm';
+    return '<div class="screen">' + sb() + '<div class="ob">' + obHead('ob2', 2, 4, 'ob4') +
+      stepHead(2, 4, 'מזמינים את ' + esc(who), 'Da Fam עובדת הכי טוב כששני ההורים בפנים. כך כל אחד רואה מה פתוח ויכול לקחת את זה.') +
+      '<div style="background:#eef2ff;border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:10px"><span class="h3" style="font-size:12px">ההודעה ש' + esc(who) + ' ' + G(pf, 'יקבל', 'תקבל', 'יקבל') + '</span>' +
+        '<div style="background:#fff;border-radius:20px 20px 6px 20px;box-shadow:0 10px 28px rgba(0,31,91,.08);padding:14px;display:flex;flex-direction:column;gap:10px"><span style="font-size:15px;font-weight:600;line-height:1.45">היי, הוספתי אותנו ל-Da Fam כדי שנתאם ביחד את ההסעות, החוגים והמטלות של הבית.</span>' +
+        '<div style="display:flex;align-items:center;gap:10px;background:#f5f7fc;border-radius:14px;padding:10px"><img src="assets/symbol-navy.svg" alt="" style="width:32px;height:32px"><div class="col"><span style="font-size:14px;font-weight:850">להצטרף לבית ״' + esc(S.hname) + '״</span><span class="meta">dafam.app/join/•••••• · תקף 7 ימים</span></div></div></div></div>' +
+      (o.sent ? '<div class="status" role="status" aria-live="polite" style="background:#eaffe8">' + (partner ? av(partner.id, 30) : '') + '<span style="font-size:14px;font-weight:850;color:#0b7a12">ההזמנה נשלחה. נעדכן כש' + esc(who) + ' ' + G(pf, 'מצטרף', 'מצטרפת', 'מצטרף') + '.</span></div>' : '') +
+      '<div class="spacer"></div><div class="col" style="gap:10px">' + (o.sent ? '<a class="btn" href="#ob4">המשך</a>' : '<button class="btn" data-act="obSend">לשלוח ל' + esc(who) + '</button>') +
+      '<button class="btn2" data-act="obCopy">' + (o.copied ? 'הקישור הועתק' : 'להעתיק קישור') + '</button></div></div>' + homebar() + '</div>';
+  };
+
+  function calendarsList() {
+    var cals = [['family', 'משפחה', 'משותף עם נדין · 12 אירועים השבוע'], ['work', 'עבודה · ' + me().name, 'אישי, מומלץ להשאיר בחוץ'], ['holidays', 'חגים בישראל', 'כדי לדעת מתי אין גן']];
+    return cals.map(function (c) {
+      var on = S.cals[c[0]];
+      return '<button data-act="calPick" data-arg="' + c[0] + '" aria-pressed="' + on + '" style="min-height:56px;border-radius:18px;padding:0 12px;display:flex;align-items:center;gap:12px;text-align:start;cursor:pointer;background:' + (on ? '#fff' : '#f5f7fc') + ';border:1.5px solid ' + (on ? '#001f5b' : '#f5f7fc') + '">' +
+        '<span class="chk' + (on ? ' on' : '') + '" style="margin:0;width:32px;height:32px"><span class="box">' + (on ? ic('tick', 16, '#001f5b', 2.6) : '') + '</span></span><span class="grow"><span style="font-size:15px;font-weight:850">' + c[1] + '</span><span class="meta">' + c[2] + '</span></span></button>';
+    }).join('');
+  }
+  function isJoin() { return S.flow === 'join'; }
+
+  screens.ob4 = function () {
+    var o = S.ob, j = isJoin(), step = j ? 1 : 3, total = j ? 2 : 4;
+    function line(ok, text) {
+      return '<div style="display:flex;align-items:flex-start;gap:10px"><span style="width:24px;height:24px;flex-shrink:0;border-radius:8px;background:' + (ok ? '#eaffe8' : '#ffe8f7') + ';display:flex;align-items:center;justify-content:center">' + (ok ? ic('tick', 14, '#0b7a12', 3) : ic('x', 12, '#b0007f', 3)) + '</span><span style="font-size:14px;font-weight:700;line-height:1.45">' + text + '</span></div>';
+    }
+    var body = !o.connected
+      ? '<div style="background:#f5f7fc;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px">' + line(true, 'נביא רק את היומנים שתבחרו בשלב הבא') + line(true, 'אירוע שתוסיפו ב-Da Fam יופיע גם ביומן') + line(false, 'לא נקרא מיילים, אנשי קשר או יומנים אחרים') + '<span class="meta">אפשר לשנות או לנתק בכל רגע במסך משפחה.</span></div>'
+      : '<div class="col" style="gap:8px"><div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:850;color:#0b7a12"><span style="width:8px;height:8px;border-radius:50%;background:#03ff00;box-shadow:0 0 0 1.5px #0b7a12"></span>Google Calendar מחובר · אילו יומנים להביא?</div>' + calendarsList() + '</div>';
+    return '<div class="screen">' + sb() + '<div class="ob">' + obHead(j ? 'join' : 'ob3', step, total) +
+      stepHead(step, total, 'מחברים את היומן', 'כך החוגים, הגן והאירועים שכבר ביומן יופיעו ב-Da Fam, ואפשר יהיה לשייך להם אחראי והכנות.') + body +
+      '<div class="spacer"></div><div class="col" style="gap:10px">' + (o.connected ? '<a class="btn" href="#ob5">המשך</a>' : '<button class="btn" data-act="obConnect">לחבר את Google Calendar</button><a class="btn2" href="#ob5">בלי יומן כרגע</a>') + '</div></div>' + homebar() + '</div>';
+  };
+
+  function notifPrefs() {
+    var prefs = [['leave', 'לפני שצריך לצאת', 'למי שאחראי על האירוע'], ['claimed', 'כשמישהו לוקח משהו', 'כדי שלא תעשו את זה פעמיים'], ['morning', 'סיכום בוקר', 'ב-7:00, מה מחכה היום'], ['quiet', 'שקט בלילה', 'בלי התראות בין 22:00 ל-7:00, חוץ מדחופות']];
+    return '<div style="background:#f5f7fc;border-radius:20px;padding:0 14px">' + prefs.map(function (p, i) {
+      var on = S.notif[p[0]];
+      return '<button class="listbtn" role="switch" aria-checked="' + on + '" data-act="pref" data-arg="' + p[0] + '" style="min-height:60px;' + (i < prefs.length - 1 ? 'border-bottom:1px solid #e8edf6' : '') + '"><span class="grow"><span style="font-size:15px;font-weight:800">' + p[1] + '</span><span class="meta">' + p[2] + '</span></span><span class="switch' + (on ? ' on' : '') + '"><i></i></span></button>';
+    }).join('') + '</div>';
+  }
+  screens.ob5 = function () {
+    var j = isJoin(), step = j ? 2 : 4, total = j ? 2 : 4;
+    function notif(text, when, op) {
+      return '<div style="background:rgba(255,255,255,' + op + ');border-radius:20px;padding:10px 12px;display:flex;align-items:flex-start;gap:10px"><span style="width:36px;height:36px;flex-shrink:0;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center"><img src="assets/symbol-navy.svg" alt="" style="width:26px;height:26px"></span><div class="grow" style="gap:1px"><div class="between"><span style="font-size:13px;font-weight:850">Da Fam</span><span style="font-size:12px;font-weight:600;color:#4b5068">' + when + '</span></div><span style="font-size:13px;font-weight:600;line-height:1.35">' + text + '</span></div></div>';
+    }
+    return '<div class="screen">' + sb() + '<div class="ob" style="gap:18px">' + obHead('ob4', step, total) + stepHead(step, total, 'רק מה שחשוב, בזמן', 'תזכורת לפני שצריך לצאת, ועדכון כשמישהו לוקח משהו. בלי הצפות.') +
+      '<div aria-hidden="true" style="background:#c7d1ff;border-radius:26px;padding:14px;display:flex;flex-direction:column;gap:8px">' + notif('עוד 20 דק׳ קינדרטורנן. איתמר לוקח את ליה, התיק מוכן.', 'עכשיו', .9) + notif('נדין לקחה את ״לקנות לחם בדרך״.', 'לפני 5 דק׳', .75) + '</div>' + notifPrefs() +
+      '<div class="spacer"></div><div class="col" style="gap:10px"><button class="btn" data-act="finishOb">לאפשר התראות ולהתחיל</button><button class="btn2" data-act="finishOb">לא עכשיו</button></div></div>' + homebar() + '</div>';
+  };
+
+  screens.main = function () {
+    var mm = me();
+    var cover = '<div class="cover" style="background-image:' + (S.photo ? 'url(\'' + S.photo + '\')' : 'none') + '">' +
+      (!S.photo
+        ? '<label style="position:absolute;top:0;left:0;right:0;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer"><span style="width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,31,91,.10)">' + ic('camera') + '</span><span style="font-size:13px;font-weight:850;color:#001f5b">להוסיף תמונה משפחתית</span><input class="hidden-input" type="file" accept="image/*" data-photo></label>'
+        : '<label aria-label="החלפת תמונה" style="position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;cursor:pointer">' + ic('camera', 18) + '<input class="hidden-input" type="file" accept="image/*" data-photo></label>') +
+      '<a href="#family" style="position:absolute;bottom:12px;right:12px;height:44px;border-radius:999px;background:#fff;box-shadow:0 6px 16px rgba(0,31,91,.12);padding:0 8px 0 14px;display:flex;align-items:center;gap:10px;font-size:15px;font-weight:850;text-decoration:none"><span>' + esc(S.hname) + '</span><span style="display:flex">' +
+        S.members.slice(0, 4).map(function (m, i) { return av(m.id, 28, 'border:2px solid #fff;' + (i ? 'margin-inline-start:-9px' : '')); }).join('') + '</span></a>' +
+      '<a href="#family" aria-label="הפרופיל שלי" style="position:absolute;top:12px;left:12px;text-decoration:none;border-radius:50%;box-shadow:0 0 0 3px #fff">' + av(S.me, 44) + '</a></div>';
+
+    var now = E('kt');
+    var nowRides = itemsOf('kt', 'ride'), nowPreps = itemsOf('kt', 'prep');
+    var kid = now.kid ? M(now.kid) : null;
+    var nowCard = '<section class="card" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">' +
+      '<div class="between"><span class="h3" style="font-size:12px">קורה עכשיו</span><span class="pill pink">עוד ' + (now.t - NOW_MIN) + ' דק׳</span></div>' +
+      '<a href="#event" data-act="openEvent" data-arg="kt" style="display:flex;align-items:center;gap:12px;text-decoration:none;min-height:52px"><div style="width:56px;height:52px;flex-shrink:0;border-radius:14px;background:#eef2ff;color:#001f5b;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:850">' + hhmm(now.t) + '</div><div class="grow" style="gap:2px"><span style="font-size:18px;font-weight:850;line-height:1.2">' + now.title + '</span><span style="font-size:13px;font-weight:600;color:#4b5068">' + (kid ? kid.name + ' · ' : '') + now.place + '</span></div>' + ic('fwd', 18, '#6b7085', 2) + '</a>' +
+      (now.done ? '<div class="status" style="background:#eaffe8"><span style="font-weight:850;color:#0b7a12">הסתיים' + (kid ? ' · ' + kid.name + ' ' + G(kid.form, 'נאסף', 'נאספה', 'נאסף') : '') + '</span></div>' : nowRides.map(function (r) { return rideBlock(r); }).join('') + nowPreps.map(function (p) { return prepRow(p); }).join('')) +
+      '</section>';
+
+    var later = S.events.filter(function (e) { return e.day === NOW_DAY && e.t > now.t; }).sort(function (a, b) { return a.t - b.t; });
+    var laterHtml = later.length ? later.map(function (e) {
+      var its = itemsOf(e.id);
+      return '<div class="' + fl(e.id) + '" style="background:#f5f7fc;border-radius:22px;padding:10px 12px;display:flex;flex-direction:column;gap:4px">' +
+        '<a href="#event" data-act="openEvent" data-arg="' + e.id + '" style="display:flex;align-items:center;gap:12px;text-decoration:none;min-height:44px"><div style="width:56px;height:36px;flex-shrink:0;border-radius:12px;background:#fff;color:#001f5b;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:850">' + hhmm(e.t) + '</div><span style="flex:1 1 auto;font-size:15px;font-weight:850">' + esc(e.title) + '</span>' + (e.who.length > 2 ? '<span class="meta" style="font-weight:800">כולם</span>' : av(e.kid || e.who[0], 26)) + '</a>' +
+        its.map(function (it) { return it.kind === 'ride' ? rideBlock(it) : prepRow(it, true); }).join('') + '</div>';
+    }).join('') : '<span class="meta">אין עוד אירועים היום.</span>';
+
+    var anytime = S.items.filter(function (x) { return x.kind === 'task' && x.day === NOW_DAY; });
+    var anyHtml = anytime.map(function (it) {
+      var o = M(it.owner);
+      var meta = it.done ? (o ? o.name + ' ' + G(o.form, 'סיים', 'סיימה', 'סיים') + ' · ' + (it.doneAt || 'עכשיו') : '') : (it.repeat || 'היום');
+      if (!it.owner) return '<div class="row' + fl(it.id) + '"><span class="dash" aria-hidden="true"></span><div class="grow"><span class="t">' + esc(it.title) + '</span><span class="meta">פתוחה לכולם</span></div><button class="sm" data-act="claim" data-arg="' + it.id + '">' + claimLabel() + '</button></div>';
+      return '<div class="row' + fl(it.id) + '">' + chk(it.done, 'toggle', it.id) + '<div class="grow"><span class="t' + (it.done ? ' done' : '') + '">' + esc(it.title) + '</span><span class="meta" style="display:flex;align-items:center;gap:4px">' + (it.repeat && !it.done ? ic('repeat', 13, '#6b7085', 2) : '') + meta + '</span></div>' + av(it.owner) + '</div>';
+    }).join('');
+
+    return '<div class="screen">' + sb() + '<div class="content">' + cover +
+      '<div class="col" style="gap:2px"><div class="eyebrow">יום ' + DAYS[NOW_DAY][2] + ' · ' + DAYS[NOW_DAY][1] + '.10</div><h1>' + greeting() + ', ' + esc(mm.name) + '!</h1></div>' + nowCard +
+      '<div class="between"><h2>בהמשך היום</h2><a class="link" href="#calendar">לוח שנה</a></div>' + laterHtml +
+      '<div class="between"><h2>מתי שהוא היום</h2><a class="link" href="#tasks">כל המטלות</a></div><div class="col" style="gap:8px">' + anyHtml + '</div>' +
+      '</div>' + nav('main') + toast() + homebar() + '</div>';
+  };
+
+  screens.event = function () {
+    var e = E(S.eventId) || E('kt'), kid = e.kid ? M(e.kid) : null;
+    var rides = itemsOf(e.id, 'ride'), preps = itemsOf(e.id, 'prep');
+    var rem = [];
+    rides.forEach(function (r) {
+      if (r.owner && !r.done && M(r.owner)) rem.push(hhmm(r.t - S.notif.lead) + ' ל' + M(r.owner).name + ' · ' + (r.title === 'איסוף' ? 'לצאת לאיסוף' : 'לצאת להסעה'));
+      if (!r.owner && r.critical) rem.push(escalation(r));
+    });
+    preps.forEach(function (p) { if (p.owner && !p.done && M(p.owner) && M(p.owner).role !== 'child') rem.push(hhmm(e.t - 60) + ' ל' + M(p.owner).name + ' · ' + p.title); });
+    var mins = e.day === NOW_DAY ? e.t - NOW_MIN : null;
+    var canFinish = e.day === NOW_DAY && e.t <= NOW_MIN + 120;
+    return '<div class="screen">' + sb() + '<div class="ob" style="padding:4px 16px 30px;gap:14px">' +
+      '<div class="between"><a class="iconbtn" href="#' + (S.eventBack || 'main') + '" aria-label="חזרה">' + ic('back') + '</a>' + (e.fromCal ? '<span style="display:flex;align-items:center;gap:6px;background:#f5f7fc;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:800;color:#4b5068">' + ic('cal', 14, '#4b5068', 2) + 'מהיומן המשותף</span>' : '') + '</div>' +
+      '<div class="col" style="gap:6px"><h1 style="font-size:22px">' + esc(e.title) + '</h1><div style="font-size:14px;font-weight:650;color:#4b5068">' + DAYS[e.day][2] + ' ' + DAYS[e.day][1] + '.10 · ' + hhmm(e.t) + (e.end ? '–' + hhmm(e.end) : '') + (e.place ? ' · ' + e.place : '') + '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-top:4px">' + e.who.map(function (w) { return av(w, 30); }).join('') + (kid ? '<span style="font-size:14px;font-weight:750">' + esc(kid.name) + ' ' + G(kid.form, 'משתתף', 'משתתפת', 'משתתף') + '</span>' : '') + (mins !== null && mins > 0 ? '<span class="pill pink" style="margin-inline-start:auto">עוד ' + mins + ' דק׳</span>' : '') + '</div></div>' +
+      (rides.length ? '<section class="col" style="gap:8px"><h2 style="font-size:15px">מי עושה מה</h2>' + rides.map(function (r) { return rideBlock(r); }).join('') + '</section>' : '') +
+      '<section class="col" style="gap:8px"><h2 style="font-size:15px">הכנה</h2>' + (preps.length ? preps.map(function (p) { return prepRow(p); }).join('') : '<span class="meta">אין הכנות עדיין.</span>') +
+        '<button class="chip" style="justify-content:center;border-style:dashed;border-color:#7d86a0;border-radius:18px" data-act="addPrep" data-arg="' + e.id + '">' + ic('plus', 18, '#001f5b', 2) + 'להוסיף הכנה</button></section>' +
+      (rem.length ? '<section class="col" style="gap:6px"><h2 style="font-size:15px">תזכורות</h2>' + rem.map(function (t) { return '<div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:650">' + ic('bell', 16, '#4b5068') + t + '</div>'; }).join('') + '</section>' : '') +
+      '<div class="spacer"></div>' +
+      (!canFinish ? '' : (!e.done
+        ? '<div class="col" style="gap:10px"><button class="btn" data-act="eventDone" data-arg="' + e.id + '">' + (kid ? esc(kid.name) + ' ' + G(kid.form, 'נאסף', 'נאספה', 'נאסף') + ' · סיימנו' : 'סיימנו') + '</button><span class="meta" style="text-align:center">כל הבית יקבל עדכון</span></div>'
+        : '<div class="col" style="gap:10px"><div class="status" role="status" style="background:#eaffe8"><span style="width:32px;height:32px;flex-shrink:0;border-radius:12px;background:#deff00;display:flex;align-items:center;justify-content:center">' + ic('tick', 18, '#001f5b', 2.4) + '</span><div class="col"><span style="font-size:15px;font-weight:850;color:#0b7a12">' + (kid ? esc(kid.name) + ' ' + G(kid.form, 'נאסף', 'נאספה', 'נאסף') : 'הסתיים') + '</span><span style="font-size:12px;font-weight:750;color:#0b7a12">כל הבית קיבל עדכון</span></div></div><a class="btn2" href="#main" style="height:52px;font-size:16px">חזרה להיום</a></div>')) +
+      '</div>' + toast() + homebar() + '</div>';
+  };
+
+  screens.tasks = function () {
+    var tab = S.tasksTab;
+    var open = S.items.filter(function (x) { return !x.owner && !x.done && !x.requested; });
+    var mineClaimed = S.items.filter(function (x) { return x.owner === S.me && !x.done && x.claimed; });
+    function where(x) { var e = E(x.ev); return e ? e.title + ' · ' + DAYS[e.day][2] + ' ' + hhmm(x.t || e.t) : (x.day != null ? DAYS[x.day][2] : ''); }
+    function label(x) { return x.kind === 'ride' ? x.title + ' ' + kidName(x.ev) : x.title; }
+    function openRow(x) {
+      return '<div class="row' + fl(x.id) + '" style="background:#ffe8f7"><span class="dash" aria-hidden="true"></span><div class="grow"><span style="font-size:14px;font-weight:750">' + esc(label(x)) + '</span><span style="font-size:12px;font-weight:750;color:#b0007f">' + esc(where(x)) + '</span></div><button class="sm" data-act="claim" data-arg="' + x.id + '">' + claimLabel() + '</button></div>';
+    }
+    function mineRow(x) {
+      return '<div class="row' + fl(x.id) + '">' + chk(x.done, 'toggle', x.id) + '<div class="grow"><span class="t">' + esc(label(x)) + '</span><span class="meta">' + esc(where(x)) + '</span></div><button class="sm light" data-act="release" data-arg="' + x.id + '">לא מסתדר לי</button></div>';
+    }
+    var sections = '';
+    if (tab !== 'mine') sections += open.length ? '<section class="col" style="gap:8px"><h2 class="h3" style="color:#b0007f">מי לוקח?</h2>' + open.map(openRow).join('') + '</section>' : (tab === 'open' ? '<div style="background:#eaffe8;border-radius:18px;padding:16px;text-align:center;font-size:14px;font-weight:800;color:#0b7a12">הכול משויך. אין מטלות פתוחות.</div>' : '');
+    if (tab !== 'open' && mineClaimed.length) sections += '<section class="col" style="gap:8px"><h2 class="h3">לקחת על עצמך</h2>' + mineClaimed.map(mineRow).join('') + '</section>';
+    var sh = S.shop, got = sh.list.filter(function (x) { return x.got; }).length, so = M(sh.owner);
+    var shopItems = !sh.store
+      ? '<div style="display:flex;flex-wrap:wrap;gap:6px">' + sh.list.map(function (x) { return '<span class="' + (x.got ? 'done' : '') + fl(x.id) + '" style="background:#f5f7fc;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700">' + esc(x.label) + '</span>'; }).join('') + '</div>'
+      : '<div class="col" style="gap:6px">' + sh.list.map(function (x) {
+          return '<button data-act="gotItem" data-arg="' + x.id + '" aria-pressed="' + !!x.got + '" style="min-height:48px;border:0;border-radius:14px;background:#f5f7fc;padding:0 10px;display:flex;align-items:center;gap:10px;text-align:start;cursor:pointer"><span class="chk' + (x.got ? ' on' : '') + '" style="margin:0;width:32px;height:32px"><span class="box">' + (x.got ? ic('tick', 16, '#001f5b', 2.6) : '') + '</span></span><span class="' + (x.got ? 'done' : '') + '" style="font-size:15px;font-weight:750">' + esc(x.label) + '</span></button>';
+        }).join('') + '</div>';
+    sections += '<section class="card" style="padding:14px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;align-items:center;gap:10px"><span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;background:#eef2ff;display:flex;align-items:center;justify-content:center">' + ic('cart', 20, '#001f5b', 1.8) + '</span><div class="grow"><span style="font-size:15px;font-weight:850">קניות לסופר</span><span class="meta">' + (sh.store ? 'מצב סופר · ' + got + ' מתוך ' + sh.list.length + ' בסל' : sh.list.length + ' פריטים' + (so ? ' · ' + so.name + ' קונה היום' : '')) + '</span></div>' + av(sh.owner, 30) + '</div>' + shopItems +
+      '<button data-act="store" style="height:48px;border:0;border-radius:999px;font-size:14px;font-weight:850;cursor:pointer;background:' + (sh.store ? '#001f5b' : '#edf1fa') + ';color:' + (sh.store ? '#fff' : '#001f5b') + '">' + (sh.store ? 'סיימתי בסופר' : 'אני בסופר') + '</button></section>';
+    if (tab !== 'open') {
+      var rec = S.items.filter(function (x) { return x.kind === 'task' && x.owner && (tab === 'all' || x.owner === S.me) && !(x.claimed && !x.done && x.owner === S.me); });
+      if (rec.length) sections += '<section class="col" style="gap:8px"><h2 class="h3">מטלות בבית</h2>' + rec.map(function (x) {
+        return '<div class="row' + fl(x.id) + '">' + chk(x.done, 'toggle', x.id) + '<div class="grow"><span class="t' + (x.done ? ' done' : '') + '">' + esc(x.title) + '</span><span class="meta" style="display:flex;align-items:center;gap:4px">' + (x.repeat ? ic('repeat', 13, '#6b7085', 2) + x.repeat + (x.day === NOW_DAY + 1 ? ' · מחר' : '') : (x.day != null ? DAYS[x.day][2] : '')) + '</span></div>' + av(x.owner) + '</div>';
+      }).join('') + '</section>';
+    }
+    return '<div class="screen">' + sb() + '<div class="content" style="gap:14px"><h1>מטלות</h1>' + seg([['mine', 'שלי'], ['open', 'פתוחות · ' + open.length], ['all', 'כולם']], tab, 'taskTab') + sections + '</div>' + nav('tasks') + toast() + homebar() + '</div>';
+  };
+
+  screens.calendar = function () {
+    var c = S.cal;
+    function keep(e) { return c.who === 'all' || e.who.indexOf(c.who) >= 0 || itemsOf(e.id).some(function (x) { return x.owner === c.who; }); }
+    function evRow(e) {
+      var openCrit = itemsOf(e.id).filter(function (x) { return !x.owner && x.kind === 'ride' && !x.done && !x.requested; })[0];
+      var past = e.day < NOW_DAY || (e.day === NOW_DAY && e.end && e.end < NOW_MIN);
+      var ownedRide = itemsOf(e.id, 'ride').filter(function (x) { return x.owner; })[0];
+      var sub = openCrit ? openCrit.title + ' ' + hhmm(openCrit.t) + ' · עוד אין אחראי'
+        : (ownedRide && M(ownedRide.owner) ? ownedRide.title + ': ' + M(ownedRide.owner).name : (itemsOf(e.id, 'prep').length ? itemsOf(e.id, 'prep').length + ' הכנות' : (e.place || '')));
+      var lead = e.who.length > 2 ? '<span class="pill soft">כולם</span>' : av(e.kid || e.who[0], 30);
+      return '<button data-act="openEvent" data-arg="' + e.id + '" class="' + (openCrit ? 'card' : 'row') + fl(e.id) + '" style="display:flex;align-items:center;gap:12px;border-radius:18px;padding:10px 12px;text-align:start;cursor:pointer;width:100%;' + (openCrit ? '' : 'border:0') + '"><span style="width:52px;flex-shrink:0;font-size:14px;font-weight:850;color:' + (past ? '#4b5068' : '#071943') + '">' + hhmm(e.t) + '</span><span class="grow" style="gap:3px"><span style="font-size:15px;font-weight:850;color:' + (past ? '#4b5068' : '#071943') + '">' + esc(e.title) + (e.kid && M(e.kid) ? ' · ' + esc(M(e.kid).name) : '') + '</span>' + (openCrit ? '<span class="pill pink" style="align-self:flex-start;padding:3px 8px">' + sub + '</span>' : '<span class="meta">' + (past ? 'הסתיים' : esc(sub)) + '</span>') + '</span>' + lead + '</button>';
+    }
+    var people = [['all']].concat(S.members.map(function (m) { return [m.id]; })).map(function (p) {
+      var on = c.who === p[0];
+      if (p[0] === 'all') return '<button data-act="who" data-arg="all" aria-pressed="' + on + '" style="height:44px;border:0;border-radius:999px;padding:0 16px;font-size:14px;font-weight:850;cursor:pointer;background:' + (on ? '#001f5b' : '#f5f7fc') + ';color:' + (on ? '#fff' : '#001f5b') + '">כולם</button>';
+      var m = M(p[0]);
+      return '<button data-act="who" data-arg="' + p[0] + '" aria-label="רק ' + esc(m.name) + '" aria-pressed="' + on + '" style="width:44px;height:44px;border-radius:50%;font-size:15px;font-weight:850;cursor:pointer;padding:0;background:' + m.bg + ';color:' + m.fg + ';border:3px solid ' + (on ? '#001f5b' : 'transparent') + ';box-shadow:' + (on ? 'inset 0 0 0 2px #fff' : 'none') + '">' + esc(m.short) + '</button>';
+    }).join('');
+    var body;
+    if (c.view === 'day') {
+      var evs = S.events.filter(function (e) { return e.day === c.day && keep(e); }).sort(function (a, b) { return a.t - b.t; });
+      var strip = '<div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px">' + DAYS.map(function (d, i) {
+        var on = i === c.day, has = S.events.some(function (e) { return e.day === i && keep(e); });
+        return '<button data-act="day" data-arg="' + i + '" aria-pressed="' + on + '" aria-label="' + d[2] + ' ' + d[1] + '.10" style="height:64px;border:0;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;cursor:pointer;background:' + (on ? '#001f5b' : '#f5f7fc') + ';color:' + (on ? '#fff' : (i < NOW_DAY ? '#4b5068' : '#071943')) + '"><span style="font-size:12px;font-weight:800">' + d[0] + '</span><span style="font-size:16px;font-weight:850">' + d[1] + '</span><span style="width:5px;height:5px;border-radius:50%;background:' + (has ? (on ? '#ff00bc' : '#001f5b') : 'transparent') + '"></span></button>';
+      }).join('') + '</div>';
+      var list = '';
+      evs.forEach(function (e, i) {
+        if (c.day === NOW_DAY && e.t > NOW_MIN && (i === 0 || evs[i - 1].t <= NOW_MIN)) list += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;font-weight:850;color:#b0007f">עכשיו ' + hhmm(NOW_MIN) + '</span><span style="flex:1 1 auto;height:2px;border-radius:2px;background:#ff00bc"></span><span style="width:8px;height:8px;border-radius:50%;background:#ff00bc"></span></div>';
+        list += evRow(e);
+      });
+      body = strip + '<h2 style="font-size:15px">' + dayLabel(c.day) + '</h2><div class="col" style="gap:8px">' + (evs.length ? list : '<div style="background:#f5f7fc;border-radius:18px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px"><span style="font-size:14px;font-weight:800;color:#4b5068">אין כלום מתוכנן</span><a class="sm" href="#add">להוסיף אירוע</a></div>') + '</div>';
+    } else {
+      body = '<div class="col" style="gap:12px">' + DAYS.map(function (d, i) {
+        var evs = S.events.filter(function (e) { return e.day === i && keep(e); }).sort(function (a, b) { return a.t - b.t; });
+        return '<div class="col" style="gap:6px"><button data-act="openDay" data-arg="' + i + '" style="min-height:44px;border:0;background:none;padding:0;display:flex;align-items:center;gap:8px;text-align:start;cursor:pointer;color:' + (i === NOW_DAY ? '#001f5b' : (i < NOW_DAY ? '#4b5068' : '#071943')) + '"><span style="font-size:14px;font-weight:850">' + dayLabel(i) + '</span><span class="meta">' + (evs.length ? evs.length + (evs.length === 1 ? ' אירוע' : ' אירועים') : 'פנוי') + '</span></button>' +
+          evs.map(function (e) {
+            var openCrit = itemsOf(e.id).some(function (x) { return !x.owner && x.kind === 'ride' && !x.requested; });
+            return '<button data-act="openEvent" data-arg="' + e.id + '" class="' + fl(e.id) + '" style="min-height:44px;border:0;display:flex;align-items:center;gap:10px;border-radius:14px;padding:6px 12px;cursor:pointer;text-align:start;background:' + (openCrit ? '#ffe8f7' : '#f5f7fc') + '"><span style="width:46px;flex-shrink:0;font-size:13px;font-weight:850;color:#4b5068">' + hhmm(e.t) + '</span><span style="flex:1 1 auto;font-size:14px;font-weight:750">' + esc(e.title) + '</span>' + (e.who.length > 2 ? '<span class="pill soft" style="padding:3px 8px">כולם</span>' : av(e.kid || e.who[0], 26)) + '</button>';
+          }).join('') + '</div>';
+      }).join('') + '</div>';
+    }
+    return '<div class="screen">' + sb() + '<div class="content" style="gap:14px">' +
+      '<div class="between"><h1>לוח שנה</h1>' + (S.cals.connected ? '<a href="#calsync" style="min-height:44px;display:flex;align-items:center;text-decoration:none"><span style="display:flex;align-items:center;gap:6px;background:#eaffe8;color:#0b7a12;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:850"><span style="width:8px;height:8px;border-radius:50%;background:#03ff00;box-shadow:0 0 0 1.5px #0b7a12"></span>Google Calendar מחובר</span></a>' : '<a class="link" href="#calsync">לחבר יומן</a>') + '</div>' +
+      seg([['day', 'יום'], ['week', 'שבוע']], c.view, 'calView') + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' + people + '</div>' + body +
+      '</div>' + nav('calendar') + toast() + homebar() + '</div>';
+  };
+
+  screens.family = function () {
+    var f = S.fam, mf = me().form;
+    function member(m, last) {
+      var role = m.role === 'parent' ? 'הורה' + (m.id === 'a' ? ' · ' + G(m.form, 'מנהל', 'מנהלת', 'מנהל') + ' הבית' : '') : (m.role === 'teen' ? (m.form === 'f' ? 'נערה' : 'נער') + ' · ' + m.age + ' · עם טלפון' : (m.form === 'f' ? 'ילדה' : 'ילד') + (m.age !== '' && m.age != null ? ' · ' + m.age : '') + ' · ההורים מנהלים');
+      var extra = m.id === S.me ? '<span class="meta" style="font-weight:800">' + G(m.form, 'אתה', 'את', 'אני') + '</span>' : (m.role === 'parent' ? '<span style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:#0b7a12"><span style="width:7px;height:7px;border-radius:50%;background:#03ff00;box-shadow:0 0 0 1.5px #0b7a12"></span>' + G(m.form, 'פעיל', 'פעילה', 'פעיל') + '</span>' : '');
+      return '<div style="display:flex;align-items:center;gap:12px;min-height:60px;' + (last ? '' : 'border-bottom:1px solid #e8edf6') + '">' + av(m.id, 40) + '<div class="grow"><span style="font-size:15px;font-weight:850">' + esc(m.name) + '</span><span class="meta">' + role + '</span></div>' + extra + '</div>';
+    }
+    var leave = '<div role="alertdialog" aria-label="אישור עזיבה" style="background:#eef2ff;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px"><span style="font-size:14px;font-weight:800;line-height:1.45">' + G(mf, 'תפסיק', 'תפסיקי', 'ההתראות והגישה ייפסקו, ולא תוכל·י') + ' לראות את הבית ולקבל תזכורות. מה שלקחת על עצמך יחזור להיות פתוח לשאר הבית.</span><div style="display:flex;gap:8px"><button class="btn2" data-act="dangerCancel">ביטול</button><button class="btn" data-act="dangerDo" data-arg="leave">לעזוב</button></div></div>';
+    var ok = f.confirm.trim() === S.hname.trim();
+    var del = '<div role="alertdialog" aria-label="אישור מחיקה" style="background:#ffe8f7;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px"><span style="font-size:14px;font-weight:800;color:#b0007f;line-height:1.45">כל האירועים, המטלות והרשימות יימחקו לכל בני הבית, וכולם יקבלו הודעה. אי אפשר לשחזר.</span>' +
+      '<button class="listbtn" data-act="exportData" style="min-height:44px;color:#001f5b;font-weight:850">' + ic('download', 18) + 'להוריד עותק של הנתונים קודם</button>' +
+      '<label class="label" style="color:#b0007f">כדי לאשר, כתבו ״' + esc(S.hname) + '״<input class="input" id="confirmName" type="text" value="' + esc(f.confirm) + '" style="border-color:#b0007f" autocomplete="off"></label>' +
+      '<div style="display:flex;gap:8px"><button class="btn2" data-act="dangerCancel">ביטול</button><button class="btn danger" data-act="dangerDo" data-arg="delete"' + (ok ? '' : ' disabled') + '>למחוק לצמיתות</button></div></div>';
+    return '<div class="screen">' + sb() + '<div class="content" style="gap:14px">' +
+      '<div class="col" style="gap:2px"><div class="eyebrow">משפחה</div><h1>' + esc(S.hname) + '</h1></div>' +
+      '<section class="card" style="padding:8px 14px 14px;display:flex;flex-direction:column">' + S.members.map(function (m, i) { return member(m, i === S.members.length - 1 && !f.invited); }).join('') +
+        (f.invited ? '<div style="display:flex;align-items:center;gap:12px;min-height:60px"><span style="width:40px;height:40px;border-radius:50%;border:1.5px dashed #4b5068;color:#4b5068;font-size:15px;font-weight:850;display:flex;align-items:center;justify-content:center">?</span><div class="grow"><span style="font-size:15px;font-weight:850">הזמנה נשלחה</span><span class="meta">קישור בוואטסאפ · תקף 7 ימים</span></div><span class="pill soft">ממתינה</span></div>' : '') +
+        '<button class="btn" style="margin-top:8px;height:48px;font-size:15px" data-act="invite">' + ic('plus', 18, '#ffffff', 2.2) + (f.invited ? 'להזמין עוד מישהו' : 'להזמין לבית') + '</button></section>' +
+      '<section class="col" style="gap:8px"><h2 class="h3">חיבורים</h2><a href="#calsync" class="row" style="text-decoration:none;gap:12px"><span style="width:40px;height:40px;flex-shrink:0;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center">' + ic('cal', 20, '#001f5b', 1.8) + '</span><span class="grow"><span style="font-size:15px;font-weight:800">Google Calendar</span><span style="font-size:12px;font-weight:750;color:' + (S.cals.connected ? '#0b7a12' : '#4b5068') + '">' + (S.cals.connected ? 'מחובר · ' + ['family', 'work', 'holidays'].filter(function (k) { return S.cals[k]; }).length + ' יומנים · סונכרן לפני 2 דק׳' : 'לא מחובר') + '</span></span>' + ic('fwd', 18, '#6b7085', 2) + '</a></section>' +
+      '<section class="col" style="gap:8px"><h2 class="h3">הגדרות</h2><div style="background:#f5f7fc;border-radius:18px;padding:0 12px;display:flex;flex-direction:column">' +
+        '<a class="listbtn" href="#notif" style="border-bottom:1px solid #e8edf6">' + ic('bell', 20, '#001f5b') + '<span style="flex:1 1 auto;font-size:15px;font-weight:800">התראות ותזכורות</span>' + ic('fwd', 18, '#6b7085', 2) + '</a>' +
+        '<button class="listbtn" aria-expanded="' + S.privacy.open + '" data-act="privacy" style="border-bottom:1px solid #e8edf6">' + ic('shield', 20, '#001f5b') + '<span class="grow"><span style="font-size:15px;font-weight:800">מי רואה מה</span><span class="meta">רק בני הבית. שום דבר לא יוצא בלי אישור</span></span>' + ic('fwd', 18, '#6b7085', 2) + '</button>' +
+        (S.privacy.open ? '<div style="padding:10px 0;border-bottom:1px solid #e8edf6;display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:650;line-height:1.45"><span>אירועים, מטלות וקניות גלויים רק לבני הבית הזה.</span><span>מהיומן מסונכרנים רק היומנים שבחרתם.</span><button class="listbtn" role="switch" aria-checked="' + S.privacy.seen + '" data-act="seen"><span class="grow"><span style="font-size:14px;font-weight:800">להראות לאחרים מתי ראיתי</span><span class="meta">כבוי: רואים רק כשמאשרים</span></span><span class="switch' + (S.privacy.seen ? ' on' : '') + '"><i></i></span></button></div>' : '') +
+        '<button class="listbtn" aria-expanded="' + S.langOpen + '" data-act="langOpen" style="border-bottom:1px solid #e8edf6">' + ic('globe', 20, '#001f5b') + '<span class="grow"><span style="font-size:15px;font-weight:800">שפה</span><span class="meta">לכל אחד בנפרד · ' + { he: 'עברית', en: 'English', de: 'Deutsch' }[S.lang] + '</span></span>' + ic('fwd', 18, '#6b7085', 2) + '</button>' +
+        (S.langOpen ? '<div style="padding:10px 0;border-bottom:1px solid #e8edf6;display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:8px;flex-wrap:wrap">' + [['he', 'עברית'], ['en', 'English'], ['de', 'Deutsch']].map(function (l) { return '<button class="chip' + (S.lang === l[0] ? ' on' : '') + '" data-act="lang" data-arg="' + l[0] + '" lang="' + l[0] + '">' + l[1] + '</button>'; }).join('') + '</div>' + (S.lang !== 'he' ? '<span class="meta">בפרוטוטייפ הזה המסכים זמינים רק בעברית.</span>' : '') + '</div>' : '') +
+        '<button class="listbtn" data-act="danger" data-arg="leave" style="border-bottom:1px solid #e8edf6">' + ic('door', 20, '#001f5b') + '<span style="flex:1 1 auto;font-size:15px;font-weight:800">לעזוב את הבית</span></button>' +
+        (f.danger === 'leave' ? leave : '') +
+        '<button class="listbtn" data-act="danger" data-arg="delete" style="color:#b0007f">' + ic('trash', 20, '#b0007f') + '<span style="flex:1 1 auto;font-size:15px;font-weight:800">למחוק את הבית וכל הנתונים</span></button>' +
+        (f.danger === 'delete' ? del : '') + '</div></section>' +
+      '</div>' + nav('family') + toast() + homebar() + '</div>';
+  };
+
+  screens.notif = function () {
+    var leads = [10, 20, 30, 60];
+    return '<div class="screen">' + sb() + '<div class="content" style="gap:16px">' + subHead('family', 'התראות ותזכורות', 'משפחה') + notifPrefs() +
+      '<div class="col" style="gap:8px"><span class="h3">כמה זמן לפני לצאת?</span><div style="display:flex;gap:8px;flex-wrap:wrap">' + leads.map(function (l) { return '<button class="chip' + (S.notif.lead === l ? ' on' : '') + '" data-act="lead" data-arg="' + l + '">' + l + ' דק׳</button>'; }).join('') + '</div></div>' +
+      '<div class="status" style="background:#eef2ff;font-size:13px;font-weight:700;line-height:1.45;align-items:flex-start">' + ic('bell', 18) + '<span>כשאיסוף או הסעה בלי אחראי, כל המבוגרים מקבלים תזכורת שעה לפני, ושוב חצי שעה לפני. זה עובד גם בשעות השקט.</span></div>' +
+      '</div>' + toast() + homebar() + '</div>';
+  };
+
+  screens.calsync = function () {
+    return '<div class="screen">' + sb() + '<div class="content" style="gap:16px">' + subHead('family', 'Google Calendar', 'חיבורים') +
+      (S.cals.connected
+        ? '<div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:850;color:#0b7a12"><span style="width:8px;height:8px;border-radius:50%;background:#03ff00;box-shadow:0 0 0 1.5px #0b7a12"></span>מחובר · סונכרן לפני 2 דק׳</div><span class="h3">אילו יומנים להביא?</span>' + calendarsList() +
+          '<span class="meta" style="line-height:1.5">יומנים שכיביתם לא נקראים בכלל. אירועים שנוספו ב-Da Fam נשמרים ביומן ״משפחה״.</span><div class="spacer"></div><button class="btn2" data-act="calConn" style="color:#b0007f">לנתק את Google Calendar</button>'
+        : '<p class="lead">היומן מנותק. אירועים שכבר ב-Da Fam נשארים כאן.</p><button class="btn" data-act="calConn">לחבר מחדש</button>') +
+      '</div>' + toast() + homebar() + '</div>';
+  };
+
+  screens.add = function () {
+    var a = S.add;
+    var tabs = a.link ? '' : '<div class="seg" role="tablist">' + [['voice', 'דיבור', 'mic'], ['type', 'הקלדה', 'keyboard']].map(function (t) {
+      var on = a.mode === t[0];
+      return '<button role="tab" aria-selected="' + on + '" class="' + (on ? 'on' : '') + '" data-act="addMode" data-arg="' + t[0] + '" style="display:flex;align-items:center;justify-content:center;gap:6px">' + ic(t[2], 18, on ? '#001f5b' : '#6b7085') + t[1] + '</button>';
+    }).join('') + '</div>';
+    var body = a.mode === 'voice' && !a.link ? voiceBody() : typeBody();
+    return '<div class="screen" style="background:#c7d1ff">' + sb() +
+      '<div class="sheet" role="dialog" aria-label="הוספה"><div class="grabber"><span></span></div>' +
+      '<div class="between"><h1>' + (a.link ? 'הוספת הכנה' : 'הוספה') + '</h1><a class="iconbtn" href="#' + (S.addBack || 'main') + '" aria-label="סגירה">' + ic('x') + '</a></div>' + tabs + body + '</div>' + toast() + homebar() + '</div>';
+  };
+  function voiceBody() {
+    var a = S.add, f = a.f;
+    if (a.v === 'listening') {
+      return '<div class="col" style="align-items:center;gap:12px;padding:18px 0 4px"><div class="pulse" style="width:132px;height:132px;border-radius:50%;background:#f6ffcc;display:flex;align-items:center;justify-content:center"><div style="width:104px;height:104px;border-radius:50%;background:#eeff99;display:flex;align-items:center;justify-content:center"><div style="width:80px;height:80px;border-radius:50%;background:#deff00;display:flex;align-items:center;justify-content:center">' + ic('mic', 32, '#001f5b', 2) + '</div></div></div>' +
+        '<span role="status" style="font-size:16px;font-weight:850">מקשיב…</span><span class="meta" style="text-align:center;max-width:290px;line-height:1.5">אפשר לומר למשל: ״תזכיר לנדין לקחת את ליה לשחייה ביום חמישי בחמש״</span></div>' +
+        '<div class="spacer"></div><button class="btn" data-act="stopListen">' + ic('stop', 20, '#ffffff', 2) + 'סיימתי לדבר</button>';
+    }
+    var kid = M(f.kid), ride = M(f.ride);
+    function fieldRow(key, label, value, warn) {
+      var open = a.edit === key;
+      return '<button class="field' + (warn ? ' warn' : '') + '" data-act="editField" data-arg="' + key + '" aria-expanded="' + open + '"><span style="width:60px;font-size:12px;font-weight:800;color:' + (warn ? '#b0007f' : '#4b5068') + '">' + label + '</span><span style="flex:1 1 auto;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:850">' + value + '</span>' + (warn ? '<span class="pill pink" style="background:#fff">בדקו</span>' : ic('pencil', 18, '#4b5068', 1.8)) + '</button>';
+    }
+    var editors = {
+      title: '<div class="edit"><input class="input small" id="vTitle" type="text" value="' + esc(f.title) + '" style="flex:1 1 auto" aria-label="שם האירוע"><button class="sm" data-act="editDone">אישור</button></div>',
+      when: '<div class="edit">' + [2, 3, 4, 5].map(function (d) { return '<button class="chip' + (f.day === d ? ' on' : '') + '" data-act="vDay" data-arg="' + d + '">' + DAYS[d][2] + ' ' + DAYS[d][1] + '.10</button>'; }).join('') + '<input class="input small" id="vTime" type="time" value="' + f.time + '" aria-label="שעה" style="direction:ltr"><button class="sm" data-act="editDone">אישור</button></div>',
+      ride: '<div class="edit">' + adults().map(function (m) { return '<button class="chip' + (f.ride === m.id ? ' on' : '') + '" data-act="vRide" data-arg="' + m.id + '">' + av(m.id, 26) + esc(m.name) + '</button>'; }).join('') + '<button class="chip' + (!f.ride ? ' on' : '') + '" data-act="vRide" data-arg="">עוד לא ידוע</button></div>',
+      lead: '<div class="edit">' + [15, 30, 60].map(function (l) { return '<button class="chip' + (f.lead === l ? ' on' : '') + '" data-act="vLead" data-arg="' + l + '">' + l + ' דק׳ לפני</button>'; }).join('') + '</div>'
+    };
+    var remindTo = ride ? ride.name : 'כל המבוגרים';
+    return '<div style="background:#f5f7fc;border-radius:18px;padding:12px 14px;font-size:15px;font-weight:600;line-height:1.45">״תזכיר לנדין לקחת את ליה לשחייה ביום חמישי בחמש״</div>' +
+      '<section class="card" style="padding:12px 14px;display:flex;flex-direction:column;gap:2px"><h2 class="h3" style="margin-bottom:6px">הבנתי כך · לחצו לתיקון</h2>' +
+        fieldRow('title', 'אירוע', esc(f.title) + (kid ? ' · ' + esc(kid.name) : '')) + (a.edit === 'title' ? editors.title : '') +
+        fieldRow('when', 'מתי', DAYS[f.day][2] + ' ' + DAYS[f.day][1] + '.10 · ' + f.time, !a.timeOk) + (a.edit === 'when' ? editors.when : '') +
+        (!a.timeOk && a.edit !== 'when' ? '<div style="display:flex;align-items:center;gap:8px;padding:2px 10px 8px"><span style="flex:1 1 auto;font-size:12px;font-weight:750;color:#b0007f">שמעתי ״בחמש״. הכוונה ל-17:00?</span><button class="sm" data-act="timeOk">כן, 17:00</button></div>' : '') +
+        fieldRow('ride', 'הסעה', ride ? av(ride.id, 26) + esc(ride.name) : 'עוד לא ידוע') + (a.edit === 'ride' ? editors.ride : '') +
+        fieldRow('lead', 'תזכורת', hhmm(toMin(f.time) - f.lead) + ' ל' + esc(remindTo)) + (a.edit === 'lead' ? editors.lead : '') +
+        '<div style="margin-top:8px;background:#f2e8ff;border-radius:18px;padding:10px 12px;display:flex;align-items:center;gap:10px"><div class="grow"><span style="font-size:12px;font-weight:850;color:#8500ff">' + (a.prep ? 'נוסף להכנה' : 'בפעם הקודמת הוספתם') + '</span><span style="font-size:14px;font-weight:750">בגד ים ומגבת</span></div><button class="sm light" data-act="vPrep">' + (a.prep ? 'ביטול' : 'להוסיף') + '</button></div></section>' +
+      '<div class="spacer"></div><div class="col" style="gap:8px">' + (!a.timeOk ? '<span class="meta" style="text-align:center;color:#b0007f">אשרו את השעה לפני שמירה</span>' : '') +
+      '<button class="btn" data-act="voiceSave"' + (a.timeOk ? '' : ' disabled') + '>שמירה</button><button class="btn2" data-act="relisten">' + ic('mic', 18) + 'לדבר שוב</button></div>';
+  }
+  function typeBody() {
+    var a = S.add;
+    if (a.saved) {
+      return '<div role="status" aria-live="polite" style="background:#eaffe8;border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center"><span style="width:52px;height:52px;border-radius:16px;background:#deff00;display:flex;align-items:center;justify-content:center">' + ic('tick', 26, '#001f5b', 2.6) + '</span><span style="font-size:17px;font-weight:850;color:#0b7a12">' + a.saved.title + '</span><span style="font-size:13px;font-weight:700;color:#0b7a12">' + a.saved.sub + '</span></div>' +
+        '<div class="spacer"></div><div class="col" style="gap:10px"><button class="btn" data-act="seeSaved">' + a.saved.see + '</button>' + (a.link ? '' : '<button class="btn2" data-act="addAgain">להוסיף עוד</button>') + '</div>';
+    }
+    var place = { event: 'למשל: חוג שחייה של ליה', task: a.link ? 'למשל: בגד ים ומגבת' : 'למשל: להוציא את הזבל', shop: 'למשל: חלב, לחם, ביצים' }[a.type];
+    var owners = adults().map(function (m) { return [m.id, m.short, m.name]; }).concat([['open', 'פתוח לכולם', 'פתוח לכולם']]);
+    var linkEv = a.link ? E(a.link) : null;
+    var form = (linkEv ? '<div class="status" style="background:#eef2ff;font-size:13px;font-weight:800">הכנה ל' + esc(linkEv.title) + ' · ' + DAYS[linkEv.day][2] + ' ' + hhmm(linkEv.t) + '</div>' : seg([['event', 'אירוע'], ['task', 'מטלה'], ['shop', 'קנייה']], a.type, 'qType')) +
+      '<label class="label">מה?<input class="input" id="qText" type="text" value="' + esc(a.text) + '" placeholder="' + place + '"></label>' +
+      (a.type !== 'shop' && !linkEv
+        ? '<div class="col" style="gap:6px"><span class="h3">מתי?</span><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+            [['today', 'היום'], ['tomorrow', 'מחר'], ['pick', 'תאריך אחר']].map(function (w) { return '<button class="chip' + (a.when === w[0] ? ' on' : '') + '" data-act="qWhen" data-arg="' + w[0] + '">' + w[1] + '</button>'; }).join('') +
+            (a.when === 'pick' ? '<input class="input small" id="qDate" type="date" min="2026-10-20" max="2026-10-24" value="' + (a.date || '2026-10-22') + '" aria-label="תאריך" style="direction:ltr">' : '') +
+            (a.type === 'event' ? '<input class="input small" id="qTime" type="time" value="' + a.time + '" aria-label="שעה" style="direction:ltr">' : '') + '</div></div>'
+        : '') +
+      (a.type !== 'shop' || linkEv
+        ? '<div class="col" style="gap:6px"><span class="h3">' + (a.type === 'event' && !linkEv ? 'מי אחראי?' : 'מי לוקח את זה?') + '</span><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' + owners.map(function (o) {
+            var sel = (a.owner === 'me' ? S.me : a.owner) === o[0], m = M(o[0]) || { bg: '#f5f7fc', fg: '#001f5b' };
+            return '<button data-act="qOwner" data-arg="' + o[0] + '" aria-label="' + esc(o[2]) + '" aria-pressed="' + sel + '" style="height:44px;min-width:44px;border-radius:999px;padding:0 ' + (o[0] === 'open' ? '14px' : '0') + ';font-size:14px;font-weight:850;cursor:pointer;background:' + m.bg + ';color:' + m.fg + ';border:3px solid ' + (sel ? '#001f5b' : 'transparent') + '">' + esc(o[1]) + '</button>';
+          }).join('') + '</div></div>'
+        : '<div class="col" style="gap:6px"><span class="h3">לאיזו רשימה?</span><div style="display:flex;align-items:center;gap:10px;background:#f5f7fc;border:1.5px solid #001f5b;border-radius:18px;padding:10px 12px;min-height:52px">' + ic('cart', 20, '#001f5b', 1.8) + '<span style="flex:1 1 auto;font-size:15px;font-weight:800">קניות לסופר</span><span class="meta">' + (M(S.shop.owner) ? esc(M(S.shop.owner).name) + ' קונה היום' : '') + '</span></div></div>');
+    return form + '<div class="spacer"></div><div class="col" style="gap:6px">' + (a.text.trim() ? '' : '<span class="meta" style="text-align:center">כתבו מה צריך לקרות</span>') + '<button class="btn" data-act="qSave"' + (a.text.trim() ? '' : ' disabled') + '>הוספה</button></div>';
+  }
+
+  /* ---------- actions ---------- */
+  function claim(id) { var it = I(id); if (!it) return; it.owner = S.me; it.claimed = true; it.requested = null; if (S.request === id) S.request = null; setToast('כל הבית קיבל עדכון: ' + took(S.me) + ' את ״' + it.title + '״'); flash(id); }
+  var A = {
+    startCreate: function () { S.flow = 'create'; S.me = 'a'; location.hash = 'ob2'; },
+    joinForm: function (f) { if (M('n')) M('n').form = f; },
+    joinGo: function () { S.flow = 'join'; S.me = 'n'; location.hash = 'ob4'; },
+    myForm: function (f) { me().form = f; },
+    obRemove: function (id) { S.members = S.members.filter(function (m) { return m.id !== id; }); S.items.forEach(function (x) { if (x.owner === id) x.owner = null; }); S.events.forEach(function (e) { e.who = e.who.filter(function (w) { return w !== id; }); if (!e.who.length) e.who = ['a']; if (e.kid === id) e.kid = null; }); if (S.shop.owner === id) S.shop.owner = 'a'; },
+    obParent: function () { S.members.splice(1, 0, { id: 'n', name: 'נדין', short: 'נד', bg: '#ff00bc', fg: '#001f5b', form: 'f', role: 'parent' }); },
+    kidOpen: function () { S.ob.addKid = true; S.ob.kidName = ''; S.ob.kidAge = ''; S.ob.kidPhone = false; },
+    kidCancel: function () { S.ob.addKid = false; },
+    kidSex: function (s) { S.ob.kidSex = s; },
+    kidPhone: function () { S.ob.kidPhone = !S.ob.kidPhone; },
+    kidSave: function () {
+      var o = S.ob, name = o.kidName.trim(); if (!name) { setToast('צריך שם'); return; }
+      var short = name.slice(0, 2), clash = S.members.some(function (m) { return m.short === short; });
+      if (clash) short = name.charAt(0) + name.charAt(name.length - 1);
+      var used = S.members.filter(function (m) { return m.role !== 'parent' && m.id !== 'l'; }).length, pal = PALETTE[used % PALETTE.length];
+      S.members.push({ id: uid(), name: name, short: short, bg: pal[0], fg: pal[1], form: o.kidSex, role: o.kidPhone ? 'teen' : 'child', age: o.kidAge === '' ? '' : +o.kidAge });
+      o.addKid = false;
+    },
+    twoHomes: function (v) { S.ob.twoHomes = v; },
+    obSend: function () { S.ob.sent = true; S.fam.invited = true; },
+    obCopy: function () { S.ob.copied = true; },
+    obConnect: function () { S.ob.connected = true; S.cals.connected = true; },
+    calPick: function (k) { S.cals[k] = !S.cals[k]; },
+    calConn: function () { S.cals.connected = !S.cals.connected; setToast(S.cals.connected ? 'היומן מחובר מחדש' : 'היומן נותק. אירועים קיימים נשארים.'); },
+    pref: function (k) { S.notif[k] = !S.notif[k]; },
+    lead: function (l) { S.notif.lead = +l; },
+    finishOb: function () { location.hash = 'main'; if (isJoin()) setToast(G(me().form, 'ברוך הבא', 'ברוכה הבאה', 'ברוכים הבאים') + '! איסוף ליה עוד פתוח.'); },
+    claim: claim,
+    release: function (id) { var it = I(id); it.owner = null; it.claimed = false; it.confirmed = false; setToast('שחררת את ״' + it.title + '״. כל המבוגרים קיבלו עדכון.'); flash(id); },
+    toggle: function (id) { var it = I(id); it.done = !it.done; if (it.done) it.doneAt = hhmm(NOW_MIN); },
+    requestOpen: function (id) { S.request = id; },
+    requestCancel: function () { S.request = null; },
+    requestSend: function (mid) {
+      var it = I(S.request), m = M(mid); S.request = null; it.requested = mid;
+      setToast('שלחנו ל' + m.name + ' בקשה');
+      setTimeout(function () {
+        if (it.requested === mid && !it.owner) {
+          it.owner = mid; it.requested = null; it.confirmed = true;
+          setToast(m.name + ' ' + G(m.form, 'אישר', 'אישרה', 'אישר') + ': ' + rideWhat(it)); flash(it.id); render(true);
+        }
+      }, 2600);
+    },
+    openEvent: function (id) { S.eventBack = route() === 'event' ? (S.eventBack || 'main') : route(); S.eventId = id; location.hash = 'event'; },
+    eventDone: function (id) { var e = E(id); e.done = true; itemsOf(id).forEach(function (x) { if (x.owner) x.done = true; }); },
+    addPrep: function (id) { S.addBack = 'event'; S.add.mode = 'type'; S.add.type = 'task'; S.add.link = id; S.add.text = ''; S.add.saved = null; S.add.owner = 'me'; location.hash = 'add'; },
+    taskTab: function (t) { S.tasksTab = t; },
+    gotItem: function (id) { S.shop.list.forEach(function (x) { if (x.id === id) x.got = !x.got; }); },
+    store: function () { S.shop.store = !S.shop.store; },
+    calView: function (v) { S.cal.view = v; },
+    day: function (i) { S.cal.day = +i; },
+    openDay: function (i) { S.cal.day = +i; S.cal.view = 'day'; },
+    who: function (w) { S.cal.who = w; },
+    invite: function () { S.fam.invited = true; setToast('קישור הזמנה נשלח'); },
+    privacy: function () { S.privacy.open = !S.privacy.open; },
+    seen: function () { S.privacy.seen = !S.privacy.seen; },
+    langOpen: function () { S.langOpen = !S.langOpen; },
+    lang: function (l) { S.lang = l; },
+    danger: function (k) { S.fam.danger = S.fam.danger === k ? null : k; S.fam.confirm = ''; },
+    dangerCancel: function () { S.fam.danger = null; },
+    dangerDo: function (k) { S.fam.danger = null; setToast(k === 'delete' ? '(הדגמה) כאן הבית היה נמחק וכולם היו מקבלים הודעה' : '(הדגמה) כאן היציאה מהבית הייתה מתבצעת'); },
+    exportData: function () { setToast('(הדגמה) קובץ עם כל הנתונים נשלח למייל שלך'); },
+    addMode: function (m) { S.add.mode = m; S.lastMode = m; },
+    stopListen: function () { S.add.v = 'review'; },
+    relisten: function () { S.add.v = 'listening'; S.add.timeOk = false; S.add.edit = null; },
+    editField: function (k) { S.add.edit = S.add.edit === k ? null : k; if (k === 'when') S.add.timeOk = true; },
+    editDone: function () { S.add.edit = null; },
+    timeOk: function () { S.add.timeOk = true; },
+    vDay: function (d) { S.add.f.day = +d; },
+    vRide: function (m) { S.add.f.ride = m || null; },
+    vLead: function (l) { S.add.f.lead = +l; S.add.edit = null; },
+    vPrep: function () { S.add.prep = !S.add.prep; },
+    voiceSave: function () {
+      var f = S.add.f, id = uid(), t = toMin(f.time);
+      S.events.push({ id: id, day: f.day, t: t, end: t + 60, title: f.title, kid: f.kid, who: [f.kid].concat(f.ride ? [f.ride] : []) });
+      S.items.push({ id: id + 'r', ev: id, kind: 'ride', title: 'הסעה', t: t - 20, owner: f.ride || null, critical: !f.ride });
+      if (S.add.prep) S.items.push({ id: id + 'p', ev: id, kind: 'prep', title: 'בגד ים ומגבת', owner: S.me });
+      S.cal.view = 'day'; S.cal.day = f.day; S.cal.who = 'all'; flash(id);
+      setToast('נוסף ללוח: ' + f.title + ' · ' + DAYS[f.day][2] + ' ' + f.time);
+      location.hash = 'calendar';
+    },
+    qType: function (t) { S.add.type = t; },
+    qWhen: function (w) { S.add.when = w; },
+    qOwner: function (o) { S.add.owner = o; },
+    qSave: function () {
+      var a = S.add, text = a.text.trim(); if (!text) return;
+      var day = a.when === 'today' ? NOW_DAY : (a.when === 'tomorrow' ? NOW_DAY + 1 : Math.min(6, Math.max(0, (+String(a.date || '2026-10-22').slice(8, 10)) - 18)));
+      var owner = a.owner === 'me' ? S.me : (a.owner === 'open' ? null : a.owner), om = M(owner), id = uid();
+      if (a.link) {
+        S.items.push({ id: id, ev: a.link, kind: 'prep', title: text, owner: owner, claimed: owner === S.me }); flash(id);
+        a.saved = { title: 'נוסף להכנה', sub: owner ? om.name + ' ' + G(om.form, 'אחראי', 'אחראית', 'אחראי') : 'פתוח לכל מי שלוקח', see: 'חזרה לאירוע', go: 'event' };
+      } else if (a.type === 'shop') {
+        text.split(/[,،]/).map(function (s) { return s.trim(); }).filter(Boolean).forEach(function (s, i) { var sid = id + i; S.shop.list.push({ id: sid, label: s }); if (!i) flash(sid); });
+        var so = M(S.shop.owner);
+        a.saved = { title: 'נוסף לקניות לסופר', sub: so ? so.name + ' ' + G(so.form, 'יראה', 'תראה', 'יראה') + ' את זה ברשימה' : '', see: 'לראות ברשימה', go: 'tasks' };
+      } else if (a.type === 'event') {
+        var t = toMin(a.time); S.events.push({ id: id, day: day, t: t, end: t + 60, title: text, who: owner ? [owner] : adults().map(function (m) { return m.id; }) }); flash(id);
+        S.cal.day = day; S.cal.view = 'day'; S.cal.who = 'all';
+        a.saved = { title: 'האירוע נוסף ללוח', sub: DAYS[day][2] + ' ' + a.time + ' · ' + (owner ? om.name + ' ' + G(om.form, 'אחראי', 'אחראית', 'אחראי') : 'עוד אין אחראי, נשאל את הבית'), see: 'לראות בלוח', go: 'calendar' };
+      } else {
+        S.items.push({ id: id, kind: 'task', title: text, owner: owner, day: day, claimed: owner === S.me }); flash(id);
+        a.saved = { title: 'המטלה נוספה', sub: DAYS[day][2] + ' · ' + (owner ? (owner === S.me ? G(me().form, 'אתה אחראי', 'את אחראית', 'זה עליך') : om.name + ' ' + G(om.form, 'קיבל', 'קיבלה', 'קיבל') + ' התראה') : 'פתוחה לכל מי שלוקח'), see: day === NOW_DAY ? 'לראות בהיום' : 'לראות במטלות', go: day === NOW_DAY ? 'main' : 'tasks' };
+      }
+    },
+    seeSaved: function () { var go = S.add.saved.go; S.add.saved = null; S.add.text = ''; if (go === 'tasks') S.tasksTab = 'all'; location.hash = go; },
+    addAgain: function () { S.add.saved = null; S.add.text = ''; }
+  };
+
+  /* ---------- render & routing ---------- */
+  var app = document.getElementById('app'), stage = document.getElementById('stage');
+  function route() { var r = (location.hash || '#splash').slice(1); return screens[r] ? r : 'splash'; }
+  var splashTimer;
+  function render(keep) {
+    var sc = app.querySelector('.content,.ob,.sheet'), y = keep && sc ? sc.scrollTop : 0;
+    var active = document.activeElement && document.activeElement.id;
+    var r = route();
+    app.innerHTML = screens[r]();
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', r === 'splash' ? '#001f5b' : (r === 'add' ? '#c7d1ff' : '#ffffff'));
+    var nsc = app.querySelector('.content,.ob,.sheet'); if (nsc) nsc.scrollTop = y;
+    if (keep && active) { var el = document.getElementById(active); if (el) { el.focus(); if (el.type === 'text') { var n = el.value.length; try { el.setSelectionRange(n, n); } catch (e) {} } } }
+    clearTimeout(splashTimer);
+    if (r === 'splash') splashTimer = setTimeout(function () { if (route() === 'splash') location.hash = 'ob1'; }, 1600);
+  }
+  app.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-act]');
+    if (!el || !A[el.dataset.act] || el.disabled) return;
+    e.preventDefault();
+    A[el.dataset.act](el.dataset.arg);
+    render(true);
+  });
+  app.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.id === 'qText') { var had = !!S.add.text.trim(); S.add.text = t.value; if (had !== !!t.value.trim()) render(true); }
+    else if (t.id === 'hname') S.hname = t.value || 'הבית שלנו';
+    else if (t.id === 'kidName') S.ob.kidName = t.value;
+    else if (t.id === 'kidAge') S.ob.kidAge = t.value;
+    else if (t.id === 'confirmName') { var was = S.fam.confirm.trim() === S.hname.trim(); S.fam.confirm = t.value; if (was !== (t.value.trim() === S.hname.trim())) render(true); }
+    else if (t.id === 'vTitle') S.add.f.title = t.value;
+    else if (t.id === 'vTime') S.add.f.time = t.value || S.add.f.time;
+    else if (t.id === 'qTime') S.add.time = t.value || S.add.time;
+    else if (t.id === 'qDate') S.add.date = t.value;
+  });
+  app.addEventListener('change', function (e) {
+    if (!e.target.matches('[data-photo]')) return;
+    var f = e.target.files && e.target.files[0]; if (!f) return;
+    if (S.photo) URL.revokeObjectURL(S.photo);
+    S.photo = URL.createObjectURL(f); render(true);
+  });
+  window.addEventListener('hashchange', function () {
+    var r = route();
+    if (r === 'add') {
+      if (!S.add.link) { S.addBack = S.prevRoute && S.prevRoute !== 'add' ? S.prevRoute : 'main'; S.add.mode = S.lastMode || 'voice'; S.add.saved = null; S.add.text = ''; }
+      S.add.v = 'listening'; S.add.timeOk = false; S.add.edit = null; S.add.prep = false;
+    } else if (S.prevRoute === 'add') { S.add.link = null; }
+    S.prevRoute = r;
+    render(false);
+  });
+  document.getElementById('restart').addEventListener('click', function (e) { e.preventDefault(); S = fresh(); S.prevRoute = 'splash'; if (route() === 'splash') render(false); else location.hash = 'splash'; });
+  function fit() {
+    if (window.innerWidth <= 500) { stage.style.transform = 'none'; return; }
+    var s = Math.min(1, (window.innerHeight - 48) / 874, (window.innerWidth - 48) / 402);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit(); S.prevRoute = route(); render(false);
+})();
+</script>
+</body>
+</html>
